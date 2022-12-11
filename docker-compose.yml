@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+    web:
+        build: .
+        command: python PyTeacher/manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./PyTeacher/:/usr/src/app/
+        ports:
+            - 8000:8000
+        env_file:
+          - ./PyTeacher/.env
+    db:
+        image: postgres:15.1
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        env_file:
+            - ./PyTeacher/.env
+volumes:
+    postgres_data:
