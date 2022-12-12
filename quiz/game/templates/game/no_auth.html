@@ -1,0 +1,7 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <h1>Для того чтобы создать игру - вы должны быть авторизованы</h1>
+    <a href="{% url 'login' %}" class="btn btn-primary">Войти в аккаунт</a>
+
+{% endblock %}

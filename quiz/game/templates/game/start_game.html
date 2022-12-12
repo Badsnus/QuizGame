@@ -1,8 +1,24 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-    <p>
-        создать игру
-    </p>
+    <h1>Создать игру</h1>
+    <p>Участники игры</p>
+    {% for member in members %}
+        <form action="{% url 'delete_member' member.member_id_in_game %}" method="post"
+              class="mb-1">
+            {% csrf_token %}
+            {{ member.member_id_in_game }}. <span
+                class="text-primary">{{ member.name }}</span>
+            <button class="btn btn-danger">Удалить</button>
+        </form>
+
+
+    {% endfor %}
+    <form method="post" action="{% url 'add_member' %}">
+        {% csrf_token %}
+        <p>Добавить участника</p>
+        {{ member_form.as_p }}
+        <button type="submit" class="btn btn-outline-success">Добавить</button>
+    </form>
 
 {% endblock %}

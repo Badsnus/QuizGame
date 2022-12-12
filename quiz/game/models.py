@@ -8,7 +8,7 @@ class GameQuestion(models.Model):
 
 
 class GameMember(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, verbose_name='имя')
 
     member_id_in_game = models.IntegerField()
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
@@ -26,7 +26,7 @@ class Game(models.Model):
     bank = models.IntegerField(default=0)
 
     round_time = models.IntegerField(default=150)
-    end_round_time = models.FloatField()
+    end_round_time = models.FloatField(default=0)
 
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)

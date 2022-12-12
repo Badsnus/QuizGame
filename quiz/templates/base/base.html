@@ -16,8 +16,11 @@
 </head>
 <body class="bg-dark text-white">
 <div class="container">
-{% include 'includes/navbar.html' %}
-    {% block content %}{% endblock %}
+    {% include 'includes/navbar.html' %}
+    <div class="mt-5">
+        {% block content %}{% endblock %}
+    </div>
+
 </div>
 
 </body>
