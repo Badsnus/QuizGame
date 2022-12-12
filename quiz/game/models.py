@@ -22,16 +22,19 @@ class GameMember(models.Model):
 class GameRound(models.Model):
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
 
-    round_bank = models.IntegerField(default=0)
-    round_now_bank = models.IntegerField(default=0)
-    round_time = models.IntegerField(default=150)
-    end_round_time = models.FloatField(default=0)
+    bank = models.IntegerField(default=0)
+    now_bank = models.IntegerField(default=0)
+    end_time = models.TimeField(null=True)
 
 
 class Game(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
     bank = models.IntegerField(default=0)
+    start_round_time = models.IntegerField(
+        default=150,
+        verbose_name='начальное время на раунд'
+    )
 
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)

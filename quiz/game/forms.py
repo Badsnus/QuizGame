@@ -10,3 +10,13 @@ class AddMemberForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'})
         }
+
+
+class StartGameForm(forms.ModelForm):
+    class Meta:
+        model = models.Game
+        fields = ['start_round_time']
+        widgets = {
+            'start_round_time': forms.TextInput(
+                attrs={'class': 'form-control'})
+        }

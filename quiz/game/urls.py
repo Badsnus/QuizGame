@@ -8,6 +8,8 @@ urlpatterns = [
     path('delete_member/<int:pk>/', views.RemoveMember.as_view(),
          name='delete_member'),
 
+    path('round_start/', views.RoundStartView.as_view(), name='round_start'),
+
     path('question/', views.QuestionView.as_view(), name='question'),
 
     path('no_auth/', views.NoAuthView.as_view(), name='no_auth'),

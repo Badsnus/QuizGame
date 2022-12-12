@@ -1,7 +1,6 @@
 from django.views import generic
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect, reverse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
 
 from . import models
 from . import forms
@@ -45,13 +44,18 @@ class RemoveMember(LoginRequiredMixin, generic.View):
         return redirect('game_start')
 
 
-class StartGameView(generic.TemplateView):
+class StartGameView(generic.FormView):
     template_name = 'game/start_game.html'
+    form_class = forms.StartGameForm
 
     def get(self, request, *args, **kwargs):
         if request.user.is_anonymous:
             return redirect('no_auth')
-
+        game = models.Game.objects.filter(
+            owner=request.user, started=True, ended=False
+        )
+        if game:
+            return redirect('round_start')
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -63,6 +67,38 @@ class StartGameView(generic.TemplateView):
         )
         context['members'] = members
         context['member_form'] = forms.AddMemberForm
+        return context
+
+    def form_valid(self, form):
+        game = get_object_or_404(
+            models.Game, owner=self.request.user, started=False,
+            ended=False
+        )
+        game.started = True
+        game.save()
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('round_start')
+
+
+class RoundStartView(generic.TemplateView):
+    template_name = 'game/start_round.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        game = get_object_or_404(models.Game, owner=self.request.user,
+                                 started=True, ended=False)
+        members = models.GameMember.objects.filter(
+            game=game
+        ).order_by('out_of_game')
+        context['members'] = members
+        context['round_number'] = members.filter(out_of_game=True).count() + 1
+        context['round_time'] = game.start_round_time - 10 * (
+                context['round_number'] - 1
+        )
         return context
 
 
