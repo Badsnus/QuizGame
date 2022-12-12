@@ -26,12 +26,9 @@ class AddMember(LoginRequiredMixin, generic.FormView):
             ended=False
         )[0]
 
-        members_count = models.GameMember.objects.filter(game=game).count()
-
         models.GameMember.objects.create(
             game=game,
-            name=form.cleaned_data['name'],
-            member_id_in_game=members_count + 1
+            name=form.cleaned_data['name']
         )
         return super().form_valid(form)
 
@@ -43,10 +40,7 @@ class RemoveMember(LoginRequiredMixin, generic.View):
 
     def post(self, request, *args, **kwargs):
         models.GameMember.objects.filter(
-            game__owner=request.user,
-            game__ended=False,
-            game__started=False,
-            member_id_in_game=kwargs['pk']
+            id=kwargs['pk']
         ).delete()
         return redirect('game_start')
 
@@ -58,7 +52,6 @@ class StartGameView(generic.TemplateView):
         if request.user.is_anonymous:
             return redirect('no_auth')
 
-        # TODO сдесь нужна провека на то есть ли у юзера начатая игра
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
