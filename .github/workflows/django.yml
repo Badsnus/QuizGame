@@ -37,5 +37,5 @@ jobs:
           pip install -r requirements.txt
       - name: Run Tests
         run: |
-          cd PyTeacher
+          cd quiz
           python manage.py test
