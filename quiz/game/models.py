@@ -8,20 +8,33 @@ class GameQuestion(models.Model):
 
 
 class GameMember(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, verbose_name='имя')
 
-    member_id_in_game = models.IntegerField()
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
 
-    good_answers = models.IntegerField()
-    bad_answers = models.IntegerField()
-    brought_in_bank = models.IntegerField()
+    good_answers = models.IntegerField(default=0)
+    bad_answers = models.IntegerField(default=0)
+    brought_in_bank = models.IntegerField(default=0)
+
+    out_of_game = models.BooleanField(default=False)
+
+
+class GameRound(models.Model):
+    game = models.ForeignKey('Game', on_delete=models.CASCADE)
+
+    bank = models.IntegerField(default=0)
+    now_bank = models.IntegerField(default=0)
+    end_time = models.TimeField(null=True)
 
 
 class Game(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    bank = models.IntegerField()
+    bank = models.IntegerField(default=0)
+    start_round_time = models.IntegerField(
+        default=150,
+        verbose_name='начальное время на раунд'
+    )
 
-    round_time = models.IntegerField()
-    end_round_time = models.FloatField()
+    started = models.BooleanField(default=False)
+    ended = models.BooleanField(default=False)

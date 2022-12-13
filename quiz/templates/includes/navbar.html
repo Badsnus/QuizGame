@@ -9,18 +9,23 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="#">Главная</a>
+                <a class="nav-link" href="{% url 'homepage' %}">Главная</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'game_start' %}">Создать игру</a>
+                <a class="nav-link" href="{% url 'game_start' %}">Создать
+                    игру</a>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search"
-                   placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                Search
-            </button>
-        </form>
+        {% if not user.is_anonymous %}
+            <a class="btn btn-outline-success my-2 my-sm-0"
+               href="{% url 'profile' %}">
+                Профиль
+            </a>
+        {% else %}
+            <a class="btn btn-outline-success my-2 my-sm-0"
+               href="{% url 'login' %}">
+                Войти в аккаунт
+            </a>
+        {% endif %}
     </div>
 </nav>
