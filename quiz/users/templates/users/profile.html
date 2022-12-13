@@ -1,6 +1,20 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-    <p>Профиль</p>
+    <h1>Профиль</h1>
+
+    <h3>Законченные игры</h3>
+    {% if not games_winners %}
+        <p>У вас еще не было игр</p>
+    {% endif %}
+    {% for winner in games_winners %}
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h5 class="card-title">Победитель: <span
+                        class="text-primary">{{ winner.name }}</span></h5>
+                <p class="card-text">Банк игры {{ winner.game.bank }}</p>
+            </div>
+        </div>
+    {% endfor %}
 
 {% endblock %}
