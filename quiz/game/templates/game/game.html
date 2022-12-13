@@ -1,11 +1,28 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-    <p>
-        Вопрос: {{ question.question }}
-    </p>
-    <p>
-        Ответ на вопрос: {{ question.answer }}
-    </p>
-
+    {% if question %}
+        <p>
+            Вопрос игроку {{ member.name }}: {{ question.question }}
+        </p>
+        <p>
+            Правильный ответ: {{ question.answer }}
+        </p>
+        <form action="{% url "game:question_answer" %}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="answer" value="1" class="btn btn-success">Верно</button>
+        </form>
+        <br>
+        <form action="{% url "game:question_answer" %}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="answer" value="0" class="btn btn-danger">Не верно</button>
+        </form>
+        <br>
+        <form action="{% url "game:question_bank" %}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="answer" value="0" class="btn btn-primary">Банк</button>
+        </form>
+    {% else %}
+        <span>Вопросы закончились :(</span>
+    {% endif %}
 {% endblock %}

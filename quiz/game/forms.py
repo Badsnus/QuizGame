@@ -3,6 +3,10 @@ from django import forms
 from . import models
 
 
+class RoundStartForm(forms.Form):
+    ...
+
+
 class AddMemberForm(forms.ModelForm):
     class Meta:
         model = models.GameMember
@@ -20,3 +24,13 @@ class StartGameForm(forms.ModelForm):
             'start_round_time': forms.TextInput(
                 attrs={'class': 'form-control'})
         }
+
+
+class QuestionForm(forms.Form):
+    CHOICES = (
+        (0, "Не верно"),
+        (1, "Верно"),
+        (2, "Банк"),
+    )
+
+    answer = forms.ChoiceField(choices=CHOICES, label="Ответ")

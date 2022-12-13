@@ -19,18 +19,14 @@ class GameMember(models.Model):
     out_of_game = models.BooleanField(default=False)
 
 
-class GameRound(models.Model):
-    game = models.ForeignKey('Game', on_delete=models.CASCADE)
-
-    bank = models.IntegerField(default=0)
-    now_bank = models.IntegerField(default=0)
-    end_time = models.TimeField(null=True)
-
-
 class Game(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
     bank = models.IntegerField(default=0)
+    questions = models.ManyToManyField(
+        GameQuestion,
+        verbose_name="вопросы"
+    )
     start_round_time = models.IntegerField(
         default=150,
         verbose_name='начальное время на раунд'
@@ -38,3 +34,13 @@ class Game(models.Model):
 
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)
+
+
+class GameRound(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    member = models.ForeignKey(GameMember, on_delete=models.CASCADE)
+    question = models.ForeignKey(GameQuestion, on_delete=models.CASCADE)
+    bank = models.IntegerField(default=0)
+    now_bank = models.IntegerField(default=0)
+    answered = models.BooleanField(default=False)
+    end_time = models.DateTimeField(null=True)

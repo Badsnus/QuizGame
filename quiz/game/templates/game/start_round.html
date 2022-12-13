@@ -13,14 +13,11 @@
                 {% endif %}
             {% endifchanged %}
             <p>
-                Игрок <span class=" {% if not member.out_of_game %}text-primary
-{% else %}text-muted{% endif %}">{{ member.name }}</span>
+                Игрок <span class="{% if not member.out_of_game %}text-primary{% else %}text-muted{% endif %}">{{ member.name }}</span>
             </p>
         {% endfor %}
     </div>
-    <form action="{% url 'round_start' %}" method="post" class="mt-5">
-        {% csrf_token %}
+    <form action="{% url 'game:question' %}" method="get" class="mt-5">
         <button class="btn btn-success btn-lg">Начать раунд</button>
     </form>
-
 {% endblock %}
