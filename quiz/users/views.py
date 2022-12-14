@@ -15,11 +15,12 @@ class ProfileView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        games_winners = game_models.GameMember.objects.select_related('game').filter(
+        games_winners = game_models.GameMember.objects.select_related(
+            'game').filter(
             game__owner=self.request.user,
             game__ended=True,
             out_of_game=False
-        )
+        ).order_by('-pk')
         context['games_winners'] = games_winners
         return context
 

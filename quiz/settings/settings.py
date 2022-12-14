@@ -72,6 +72,17 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'iop09&56'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': '5432',
+    }
+}
 # Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -101,7 +112,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static_dev"
+]
+STATIC_ROOT = "static"
 
 # Default primary key field type
 
@@ -109,3 +124,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'profile'
 LOGIN_URL = 'login'
+
+BANK = (
+    0,
+    1000,
+    2000,
+    5000,
+    10000,
+    20000,
+    30000,
+    40000,
+    50000,
+)

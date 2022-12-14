@@ -13,6 +13,8 @@
                 <h5 class="card-title">Победитель: <span
                         class="text-primary">{{ winner.name }}</span></h5>
                 <p class="card-text">Банк игры {{ winner.game.bank }}</p>
+                <a class="btn btn-primary"
+                   href="{% url 'result' winner.game.pk %}">Подробнее</a>
             </div>
         </div>
     {% endfor %}

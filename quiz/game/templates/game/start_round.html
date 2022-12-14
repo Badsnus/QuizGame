@@ -2,7 +2,8 @@
 
 {% block content %}
     <h1>Раунд №{{ round_number }}</h1>
-    <p>Время на раунд: {{ round_time }} секунд</p>
+    <p>Банк: <span class="text-primary">{{ bank }}</span><br>
+    Время на раунд: <span class="text-primary">{{ round_time }}</span> секунд</p>
     <div>
         {% for member in members %}
             {% ifchanged member.out_of_game %}
