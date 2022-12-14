@@ -15,7 +15,7 @@ services:
         volumes:
             - ./quiz/:/usr/src/app/
         ports:
-            - 8000:8000
+            - "8000:8000"
         env_file:
             - quiz/.env
         depends_on:
