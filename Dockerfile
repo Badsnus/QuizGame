@@ -5,11 +5,12 @@ WORKDIR /app
 COPY requirements.txt .
 
 RUN python -m pip install -r requirements.txt
-RUN python quiz/manage.py migrate
-RUN python quiz/manage.py collectstatic
 
 
 COPY . .
+
+RUN python quiz/manage.py migrate
+RUN python quiz/manage.py collectstatic
 
 ENV APP_PORT=8000
 
