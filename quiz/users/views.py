@@ -1,6 +1,7 @@
+from django.contrib.auth import authenticate, login
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse, render
 
 from game import models as game_models
 
@@ -28,3 +29,17 @@ class ProfileView(generic.TemplateView):
 class RegisterView(generic.FormView):
     form_class = UserCreationForm
     template_name = 'registration/registration.html'
+
+    def post(self, request, *args, **kwargs):
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('profile')
+        context = {
+            'form': form
+        }
+        return render(request, self.template_name, context)
