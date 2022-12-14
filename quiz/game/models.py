@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -24,7 +25,11 @@ class GameRound(models.Model):
 
     bank = models.IntegerField(default=0)
     now_bank = models.IntegerField(default=0)
-    end_time = models.TimeField(null=True)
+    end_time = models.DateTimeField(null=True)
+    vote = models.BooleanField(default=False)
+    final = models.BooleanField(default=False)
+    ended = models.BooleanField(default=False)
+    offset = models.IntegerField(default=0)
 
 
 class Game(models.Model):
@@ -33,7 +38,11 @@ class Game(models.Model):
     bank = models.IntegerField(default=0)
     start_round_time = models.IntegerField(
         default=150,
-        verbose_name='начальное время на раунд'
+        verbose_name='начальное время на раунд',
+        validators=[
+            MaxValueValidator(1800),
+            MinValueValidator(120)
+        ]
     )
 
     started = models.BooleanField(default=False)

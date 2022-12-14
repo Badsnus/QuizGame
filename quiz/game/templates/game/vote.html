@@ -1,0 +1,24 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <h1>Голосование</h1>
+    <h2>Статистика игроков:</h2>
+
+    {% for member in members %}
+
+        <p>
+            Игрок <span class="text-primary">{{ member.name }}</span>
+        </p>
+        <p>
+            Правильных ответов: {{ member.good_answers }}<br>
+            Неправильных ответов: {{ member.bad_answers }}<br>
+            Принес в банк: {{ member.brought_in_bank }}
+        </p>
+        <form action="{% url 'kick_player' member.pk %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Выгнать</button>
+        </form>
+        <hr>
+    {% endfor %}
+
+{% endblock %}
