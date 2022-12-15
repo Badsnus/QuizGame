@@ -11,7 +11,7 @@ class ProfileView(generic.TemplateView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_anonymous:
-            return redirect('login')
+            return redirect('users:login')
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -37,7 +37,7 @@ class RegisterView(generic.FormView):
             password=form.cleaned_data.get('password1')
         )
         login(self.request, user)
-        return redirect('profile')
+        return redirect('users:profile')
 
     def form_invalid(self, form):
         context = {

@@ -41,7 +41,7 @@ class FinalView(generic.TemplateView):
         if game_round.ended:
             game.ended = True
             game.save()
-            return redirect('result', game.pk)
+            return redirect('game:result', game.pk)
 
         members = list(models.GameMember.objects.filter(
             game=game, out_of_game=False
@@ -100,7 +100,7 @@ class FinalView(generic.TemplateView):
         game_round.save()
         player.save()
 
-        return redirect('final')
+        return redirect('game:final')
 
 
 class VoteView(generic.TemplateView):
@@ -138,7 +138,7 @@ class VoteView(generic.TemplateView):
                 game=game_round.game,
                 out_of_game=False
             ).update(brought_in_bank=0, bad_answers=0, good_answers=0)
-            return redirect('final')
+            return redirect('game:final')
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -150,9 +150,9 @@ class VoteView(generic.TemplateView):
         ).first()
 
         if not game_round:
-            return redirect('round_start')
+            return redirect('game:round_start')
         if game_round.vote is False:
-            return redirect('question')
+            return redirect('game:question')
 
         member = get_object_or_404(
             models.GameMember,
@@ -166,7 +166,7 @@ class VoteView(generic.TemplateView):
             game=game_round.game,
             out_of_game=False
         ).update(brought_in_bank=0, bad_answers=0, good_answers=0)
-        return redirect('round_start')
+        return redirect('game:round_start')
 
 
 class QuestionView(LoginRequiredMixin, generic.DetailView):
@@ -185,7 +185,7 @@ class QuestionView(LoginRequiredMixin, generic.DetailView):
             ended=False
         )
         if self.game_round.vote:
-            return redirect('vote')
+            return redirect('game:vote')
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -224,7 +224,7 @@ class QuestionView(LoginRequiredMixin, generic.DetailView):
             if (game_round.end_time.replace(tzinfo=None) <=
                     datetime.datetime.utcnow().replace(tzinfo=None)):
                 self.update_bank(game_round, game_round.bank, members, True)
-                return redirect('question')
+                return redirect('game:question')
 
             if value in {'bad', 'good'}:
                 if value == 'bad':
@@ -250,7 +250,7 @@ class QuestionView(LoginRequiredMixin, generic.DetailView):
 
             game_round.save()
             member.save()
-        return redirect('question')
+        return redirect('game:question')
 
     @staticmethod
     def update_bank(game_round, bank, members=None, vote=False):
@@ -282,7 +282,7 @@ class AddMember(LoginRequiredMixin, generic.FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('game_start')
+        return reverse('game:game_start')
 
 
 class RemoveMember(LoginRequiredMixin, generic.View):
@@ -291,7 +291,7 @@ class RemoveMember(LoginRequiredMixin, generic.View):
         models.GameMember.objects.filter(
             id=kwargs['pk']
         ).delete()
-        return redirect('game_start')
+        return redirect('game:game_start')
 
 
 class StartGameView(generic.FormView):
@@ -300,12 +300,12 @@ class StartGameView(generic.FormView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_anonymous:
-            return redirect('no_auth')
+            return redirect('game:no_auth')
         game = models.Game.objects.filter(
             owner=request.user, started=True, ended=False
         )
         if game:
-            return redirect('round_start')
+            return redirect('game:round_start')
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -340,7 +340,7 @@ class StartGameView(generic.FormView):
         return super().form_invalid(form)
 
     def get_success_url(self):
-        return reverse('round_start')
+        return reverse('game:round_start')
 
 
 class RoundStartView(generic.TemplateView):
@@ -372,7 +372,7 @@ class RoundStartView(generic.TemplateView):
             game__ended=False
         )
         if started_round:
-            return redirect('question')
+            return redirect('game:question')
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -395,4 +395,4 @@ class RoundStartView(generic.TemplateView):
                 )))
             x.save()
 
-        return redirect('question')
+        return redirect('game:question')

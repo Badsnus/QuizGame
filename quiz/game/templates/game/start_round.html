@@ -19,7 +19,7 @@
             </p>
         {% endfor %}
     </div>
-    <form action="{% url 'round_start' %}" method="post" class="mt-5">
+    <form action="{% url 'game:round_start' %}" method="post" class="mt-5">
         {% csrf_token %}
         <button class="btn btn-success btn-lg">Начать раунд</button>
     </form>

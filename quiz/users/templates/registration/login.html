@@ -4,10 +4,11 @@
     <p>
         Авторизация
     </p>
-    <form method="post" action="{% url 'login' %}">
+    <form method="post" action="{% url 'users:login' %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary">Войти</button>
     </form>
-    <a class="text-primary" href="{% url 'register' %}">У меня нет аккаунта</a>
+    <a class="text-primary" href="{% url 'users:register' %}">У меня нет
+        аккаунта</a>
 {% endblock %}
