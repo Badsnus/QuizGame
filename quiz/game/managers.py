@@ -24,3 +24,23 @@ class GameMemberManager(models.Manager):
                 out_of_game=False
             ),
         )
+
+    def game_members(self, user):
+        return (
+            self.get_queryset().filter(
+                game__owner=user,
+                game__started=False,
+                game__ended=False,
+            )
+        )
+
+
+class GameManager(models.Manager):
+    def user_started_game(self, user):
+        return (
+            self.get_queryset().filter(
+                owner=user,
+                started=True,
+                ended=False
+            )
+        )

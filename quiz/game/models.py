@@ -75,6 +75,7 @@ class GameRound(models.Model):
 
 
 class Game(models.Model):
+    objects = managers.GameManager()
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

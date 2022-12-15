@@ -12,6 +12,54 @@ class NoAuthView(generic.TemplateView):
     template_name = 'game/no_auth.html'
 
 
+class StartGameView(generic.FormView):
+    template_name = 'game/start_game.html'
+    form_class = forms.StartGameForm
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return redirect('game:no_auth')
+
+        if models.Game.objects.user_started_game(user=request.user):
+            return redirect('game:round_start')
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        members = models.GameMember.objects.game_members(
+            self.request.user,
+        )
+
+        context['members'] = members
+        context['member_form'] = forms.AddMemberForm
+        return context
+
+    def form_valid(self, form):
+        game = models.Game.objects.filter(
+            owner=self.request.user,
+            started=False,
+            ended=False
+        ).first()
+        count = models.GameMember.objects.filter(game=game).count()
+        if 12 >= count >= 2:
+            game.start_round_time = form.cleaned_data['start_round_time']
+            game.started = True
+            game.save()
+
+            return super().form_valid(form)
+        if count < 2:
+            error = 'Минимальное кол-во игроков - 2'
+        else:
+            error = 'Максимальное кол-во игроков - 12'
+        form.add_error('start_round_time', error)
+        return super().form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('game:round_start')
+
+
 class AddMember(LoginRequiredMixin, generic.FormView):
     form_class = forms.AddMemberForm
 
@@ -39,55 +87,6 @@ class RemoveMember(LoginRequiredMixin, generic.View):
             id=kwargs['pk']
         ).delete()
         return redirect('game:game_start')
-
-
-class StartGameView(generic.FormView):
-    template_name = 'game/start_game.html'
-    form_class = forms.StartGameForm
-
-    def get(self, request, *args, **kwargs):
-        if request.user.is_anonymous:
-            return redirect('game:no_auth')
-        game = models.Game.objects.filter(
-            owner=request.user, started=True, ended=False
-        )
-        if game:
-            return redirect('game:round_start')
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        members = models.GameMember.objects.filter(
-            game__owner=self.request.user,
-            game__started=False,
-            game__ended=False,
-        )
-        context['members'] = members
-        context['member_form'] = forms.AddMemberForm
-        return context
-
-    def form_valid(self, form):
-        game = models.Game.objects.filter(
-            owner=self.request.user,
-            started=False,
-            ended=False
-        ).first()
-        count = models.GameMember.objects.filter(game=game).count()
-        if 12 >= count >= 2:
-            game.start_round_time = form.cleaned_data['start_round_time']
-            game.started = True
-            game.save()
-
-            return super().form_valid(form)
-        if count < 2:
-            error = 'Минимальное кол-во игроков - 2'
-        else:
-            error = 'Максимальное кол-во игроков - 12'
-        form.add_error('start_round_time', error)
-        return super().form_invalid(form)
-
-    def get_success_url(self):
-        return reverse('game:round_start')
 
 
 class RoundStartView(generic.TemplateView):
