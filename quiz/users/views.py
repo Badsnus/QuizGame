@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import redirect, reverse, render
+from django.shortcuts import redirect, render
 
 from game import models as game_models
 
