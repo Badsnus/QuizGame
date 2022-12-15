@@ -10,9 +10,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'super-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'karonus.tk',
+    'localhost',
+    '127.0.0.1',
+]
 
 # Application definition
 
@@ -73,16 +77,6 @@ DATABASES = {
     }
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
-        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'iop09&56'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-        'PORT': '5432',
-    }
-}
 # Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -112,7 +106,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = "/static/"
+STATIC_URL = "https://storage.yandexcloud.net/django-project/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static_dev"
 ]
