@@ -16,13 +16,12 @@ class ProfileView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        games_winners = game_models.GameMember.objects.select_related(
-            'game').filter(
-            game__owner=self.request.user,
-            game__ended=True,
-            out_of_game=False
-        ).order_by('-pk')
-        context['games_winners'] = games_winners
+
+        context['games_winners'] = (
+            game_models.GameMember.objects.winners_of_user_games(
+                self.request.user
+            )
+        )
         return context
 
 
@@ -30,16 +29,18 @@ class RegisterView(generic.FormView):
     form_class = UserCreationForm
     template_name = 'registration/registration.html'
 
-    def post(self, request, *args, **kwargs):
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            return redirect('profile')
+    def form_valid(self, form):
+        form.save()
+
+        user = authenticate(
+            username=form.cleaned_data.get('username'),
+            password=form.cleaned_data.get('password1')
+        )
+        login(self.request, user)
+        return redirect('profile')
+
+    def form_invalid(self, form):
         context = {
             'form': form
         }
-        return render(request, self.template_name, context)
+        return render(self.request, self.template_name, context)

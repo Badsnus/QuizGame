@@ -2,6 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 
+from . import managers
 
 class GameQuestion(models.Model):
     question = models.CharField(max_length=300)
@@ -9,6 +10,8 @@ class GameQuestion(models.Model):
 
 
 class GameMember(models.Model):
+    objects = managers.GameMemberManager()
+
     name = models.CharField(max_length=30, verbose_name='имя')
 
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
