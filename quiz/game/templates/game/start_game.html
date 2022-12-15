@@ -1,30 +1,32 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-    <h1>Создать игру</h1>
-    <p>Участники игры</p>
-    <div class="mb-4">
-        {% for member in members %}
-            <form action="{% url 'delete_member' member.pk %}" method="post"
-                  class="mb-1 d-flex justify-content-between">
-                {% csrf_token %}
-                <span
-                        class="text-primary">{{ member.name }}</span>
-                <button class="btn btn-danger">Удалить</button>
-            </form>
-        {% endfor %}
-    </div>
+    <div class="d-flex justify-content-center">
+        <div class="col col-lg-4 text-center">
+            <h1>Создать игру</h1>
+            <p>Участники игры</p>
+            <div class="mb-4">
+                {% for member in members %}
+                    <form action="{% url 'delete_member' member.pk %}" method="post" class="mb-1 d-flex justify-content-between align-content-center">
+                        {% csrf_token %}
+                        <span class="text-primary">{{ member.name }}</span>
+                        <button class="btn btn-outline-danger">x</button>
+                    </form>
+                {% endfor %}
+            </div>
 
-    <form method="post" action="{% url 'add_member' %}" class="mb-3">
-        {% csrf_token %}
-        <h2>Добавить участника</h2>
-        {{ member_form.as_p }}
-        <button type="submit" class="btn btn-outline-success">Добавить</button>
-    </form>
-    <form action="{% url 'game_start' %}" method="post">
-        <h2>Начать игру</h2>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Начать игру</button>
-    </form>
+            <form method="post" action="{% url 'add_member' %}" class="mb-3">
+                {% csrf_token %}
+                <h4>Добавить участника</h4>
+                {{ member_form.as_p }}
+                <button type="submit" class="btn btn-outline-success">Добавить</button>
+            </form>
+            <form action="{% url 'game_start' %}" method="post">
+                <h4>Начать игру</h4>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-outline-primary">Начать игру</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}
