@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    {% block name %} {% endblock %}
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
@@ -17,11 +17,15 @@
 <body class="bg-dark text-white">
 <div class="container">
     {% include 'includes/navbar.html' %}
+
+</div>
+{% block topcontent %}{% endblock %}
+<div class="container">
     <div class="mt-5">
         {% block content %}{% endblock %}
     </div>
-
 </div>
+{% block undercontent %}{% endblock %}
 
 </body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
