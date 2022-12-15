@@ -17,6 +17,7 @@ class StartGameForm(forms.ModelForm):
         model = models.Game
         fields = ['start_round_time']
         widgets = {
-            'start_round_time': forms.IntegerField(
-                attrs={'class': 'form-control'})
+            'start_round_time': forms.NumberInput(
+                attrs={'class': 'form-control'}
+            )
         }

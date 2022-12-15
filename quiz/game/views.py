@@ -17,12 +17,7 @@ class ResultView(generic.DetailView):
     context_object_name = 'winner'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(
-            models.GameMember.objects.select_related('game').filter(
-                game__pk=self.kwargs['pk'],
-                out_of_game=False
-            ),
-        )
+        return models.GameMember.objects.winner(self.kwargs['pk'])
 
 
 class FinalView(generic.TemplateView):
