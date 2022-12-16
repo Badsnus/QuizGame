@@ -149,19 +149,12 @@ class RoundStartView(generic.TemplateView):
         if not game_round:
             game = models.Game.objects.no_ended_game_by_user(
                 request.user,
-                start=True
             )
 
             if not game:
                 return redirect('game:game_start')
 
-            models.GameRound.objects.create(
-                game=game,
-                end_time=(
-                        datetime.datetime.utcnow() +
-                        datetime.timedelta(seconds=game.round_time)
-                )
-            )
+            models.GameRound.objects.create_round(game)
 
         return redirect('game:question')
 
@@ -176,46 +169,46 @@ class QuestionView(LoginRequiredMixin, generic.DetailView):
         return models.GameQuestion.objects.order_by("?").first()
 
     def get(self, request, *args, **kwargs):
-        self.game_round = get_object_or_404(
-            models.GameRound,
-            game__owner=self.request.user,
-            ended=False
-        )
+        self.game_round = models.GameRound.objects.find_round(request.user)
+
+        if not self.game_round:
+            return redirect('game:game_start')
+
         if self.game_round.vote:
             return redirect('game:vote')
+
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        game_round = self.game_round
-        member = models.GameMember.objects.filter(
-            game__owner=self.request.user,
-            game__ended=False,
-            game__started=True,
-            out_of_game=False
-        ).order_by('id')[game_round.offset]
 
-        context['round'] = game_round
+        member = models.GameMember.objects.user_for_question(
+            self.request.user,
+            self.game_round.offset
+        )
+
+        context['round'] = self.game_round
         context['member'] = member
 
-        context['round_end_time'] = str(game_round.end_time)
+        context['round_end_time'] = str(self.game_round.end_time)
 
         return context
 
     def post(self, request, *args, **kwargs):
         value = request.POST.get('value', None)
+        # TODO вот это все надо в сервис отдельный
         if value in {'bad', 'good', 'bank'}:
             game_round = get_object_or_404(
-                models.GameRound.objects.prefetch_related('game'),
+                models.GameRound.objects.select_related('game'),
                 game__owner=self.request.user,
                 ended=False
             )
-            members = models.GameMember.objects.filter(
-                game__owner=self.request.user,
-                game__ended=False,
-                game__started=True,
-                out_of_game=False
-            ).order_by('pk')
+            members = (
+                models.GameMember.objects.get_active_game_members_by_user(
+                    request.user
+                )
+            )
+
             member = members[game_round.offset]
 
             if (game_round.end_time.replace(tzinfo=None) <=

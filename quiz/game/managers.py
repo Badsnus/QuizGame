@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.shortcuts import get_object_or_404
 
@@ -28,13 +30,28 @@ class GameMemberManager(models.Manager):
             ),
         )
 
-    def get_game_members_by_user(self, user):
+    def _get_game_members_no_end_game_by_user(self, user):
         return (
             self.get_queryset().filter(
                 game__owner=user,
-                game__started=False,
                 game__ended=False,
             )
+        )
+
+    def get_game_members_by_user(self, user):
+        return self._get_game_members_no_end_game_by_user(user).filter(
+            game__started=False
+        )
+
+    def get_active_game_members_by_user(self, user):
+        return self._get_game_members_no_end_game_by_user(user).filter(
+            game__started=True,
+            out_of_game=False
+        ).order_by('pk')
+
+    def user_for_question(self, user, offset):
+        return (
+            self.get_active_game_members_by_user(user)[offset]
         )
 
     def delete_game_member(self, pk):
@@ -71,3 +88,12 @@ class GameRoundManager(models.Manager):
                 game__ended=False
             )
         ).first()
+
+    def create_round(self, game):
+        return self.get_queryset().create(
+            game=game,
+            end_time=(
+                    datetime.datetime.utcnow() +
+                    datetime.timedelta(seconds=game.round_time)
+            )
+        )
