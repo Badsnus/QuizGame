@@ -1,0 +1,41 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <h1>Финальный раунд</h1>
+    <p>Банк: <span class="text-primary">{{ bank }}</span></p>
+    <div>
+        {% for member in members %}
+            <p>
+                Игрок <span class="text-primary">{{ member.name }}</span>
+            </p>
+            <p>Правильных ответов: {{ member.good_answers }}<br>
+                Неправильных ответов: {{ member.bad_answers }}
+            </p>
+            <hr/>
+        {% endfor %}
+    </div>
+    <div>
+        <h2>Вопрос для<span
+                class="text-primary"> {{ question_for_member.name }}</span>
+        </h2>
+        <p>
+            Вопрос: {{ question.question }}
+        </p>
+        <p>
+            Ответ на вопрос: {{ question.answer }}
+        </p>
+    </div>
+
+    <form action="{% url 'final' %}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-success" name="value" type="submit"
+                value="good">
+            Правильный
+            ответ
+        </button>
+        <button class="btn btn-danger" name="value" type="submit" value="bad">
+            Неправильный
+            ответ
+        </button>
+    </form>
+{% endblock %}
