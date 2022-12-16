@@ -19,7 +19,7 @@
     <p>
         Ответ на вопрос: {{ question.answer }}
     </p>
-    <form action="{% url 'question' %}" method="post">
+    <form action="{% url 'game:question' %}" method="post">
         {% csrf_token %}
         <button class="btn btn-success" name="value" type="submit"
                 value="good">

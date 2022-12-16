@@ -14,7 +14,7 @@
             Неправильных ответов: {{ member.bad_answers }}<br>
             Принес в банк: {{ member.brought_in_bank }}
         </p>
-        <form action="{% url 'kick_player' member.pk %}" method="post">
+        <form action="{% url 'game:kick_member' member.pk %}" method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Выгнать</button>
         </form>
