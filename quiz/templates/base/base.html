@@ -4,7 +4,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
         body {
@@ -19,11 +18,15 @@
 <body class="bg-dark text-white">
 <div class="container">
     {% include 'includes/navbar.html' %}
+
+</div>
+{% block topcontent %}{% endblock %}
+<div class="container">
     <div class="mt-5">
         {% block content %}{% endblock %}
     </div>
-
 </div>
+{% block undercontent %}{% endblock %}
 
 </body>
 <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
