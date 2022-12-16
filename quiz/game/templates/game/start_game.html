@@ -7,7 +7,7 @@
             <p>Участники игры</p>
             <div class="mb-4">
                 {% for member in members %}
-                    <form action="{% url 'delete_member' member.pk %}" method="post" class="mb-1 d-flex justify-content-between align-content-center">
+                    <form action="{% url 'game:delete_member' member.pk %}" method="post" class="mb-1 d-flex justify-content-between align-content-center">
                         {% csrf_token %}
                         <span class="text-primary">{{ member.name }}</span>
                         <button class="btn btn-outline-danger">x</button>
@@ -15,13 +15,13 @@
                 {% endfor %}
             </div>
 
-            <form method="post" action="{% url 'add_member' %}" class="mb-3">
+            <form method="post" action="{% url 'game:add_member' %}" class="mb-3">
                 {% csrf_token %}
                 <h4>Добавить участника</h4>
                 {{ member_form.as_p }}
                 <button type="submit" class="btn btn-outline-success">Добавить</button>
             </form>
-            <form action="{% url 'game_start' %}" method="post">
+            <form action="{% url 'game:game_start' %}" method="post">
                 <h4>Начать игру</h4>
                 {% csrf_token %}
                 {{ form.as_p }}

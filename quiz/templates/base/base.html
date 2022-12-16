@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    {% block head %}{% endblock %}
     <style>
         body {
             font-size: 18px;
@@ -13,23 +14,20 @@
         {% block style %}
         {% endblock %}
     </style>
-
 </head>
 <body class="bg-dark text-white">
 <div class="container">
     {% include 'includes/navbar.html' %}
-
-</div>
-{% block topcontent %}{% endblock %}
-<div class="container">
+    {% block topcontent %}{% endblock %}
     <div class="mt-5">
         {% block content %}{% endblock %}
     </div>
+    {% block undercontent %}{% endblock %}
 </div>
-{% block undercontent %}{% endblock %}
 
 </body>
 <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
 <script src="{% static 'js/popper.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
+{% block underbody %}{% endblock %}
 </html>
