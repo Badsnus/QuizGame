@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('bank', models.IntegerField(default=0)),
-                ('start_round_time', models.IntegerField(default=150, verbose_name='начальное время на раунд')),
+                ('round_time', models.IntegerField(default=150, verbose_name='начальное время на раунд')),
                 ('started', models.BooleanField(default=False)),
                 ('ended', models.BooleanField(default=False)),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),

@@ -20,15 +20,26 @@ class StartGameView(generic.FormView):
         if request.user.is_anonymous:
             return redirect('game:no_auth')
 
-        if models.Game.objects.user_started_game(user=request.user):
+        started_game = models.Game.objects.no_ended_game_by_user(
+            user=request.user,
+            start=True
+        )
+
+        if started_game:
             return redirect('game:round_start')
+
+        models.Game.objects.get_or_create(
+            owner=self.request.user,
+            started=False,
+            ended=False
+        )
 
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        members = models.GameMember.objects.game_members(
+        members = models.GameMember.objects.get_game_members_by_user(
             self.request.user,
         )
 
@@ -37,23 +48,29 @@ class StartGameView(generic.FormView):
         return context
 
     def form_valid(self, form):
-        game = models.Game.objects.filter(
-            owner=self.request.user,
-            started=False,
-            ended=False
-        ).first()
-        count = models.GameMember.objects.filter(game=game).count()
-        if 12 >= count >= 2:
-            game.start_round_time = form.cleaned_data['start_round_time']
+        game = get_object_or_404(
+            models.Game.objects.no_ended_game_by_user(
+                user=self.request.user,
+                start=False,
+                query_set=True
+            )
+        )
+
+        members_count = models.GameMember.objects.filter(game=game).count()
+        # TODO это надо переделать - выглядит не красиво
+        if 12 >= members_count >= 2:
+            game.round_time = form.cleaned_data['round_time']
             game.started = True
             game.save()
 
             return super().form_valid(form)
-        if count < 2:
+
+        if members_count < 2:
             error = 'Минимальное кол-во игроков - 2'
         else:
             error = 'Максимальное кол-во игроков - 12'
-        form.add_error('start_round_time', error)
+
+        form.add_error('round_time', error)
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -63,17 +80,22 @@ class StartGameView(generic.FormView):
 class AddMember(LoginRequiredMixin, generic.FormView):
     form_class = forms.AddMemberForm
 
-    def form_valid(self, form):
-        game = models.Game.objects.get_or_create(
-            owner=self.request.user,
-            started=False,
-            ended=False
-        )[0]
+    def get_initial(self):
+        initial = super().get_initial()
 
-        models.GameMember.objects.create(
-            game=game,
-            name=form.cleaned_data['name']
+        initial['game'] = get_object_or_404(
+            models.Game.objects.no_ended_game_by_user(
+                self.request.user,
+                start=False,
+                query_set=True
+            )
         )
+
+        return initial
+
+    def form_valid(self, form):
+        form.save()
+
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -83,9 +105,8 @@ class AddMember(LoginRequiredMixin, generic.FormView):
 class RemoveMember(LoginRequiredMixin, generic.View):
 
     def post(self, request, *args, **kwargs):
-        models.GameMember.objects.filter(
-            id=kwargs['pk']
-        ).delete()
+        models.GameMember.objects.delete_game_member(kwargs['pk'])
+
         return redirect('game:game_start')
 
 
@@ -95,51 +116,52 @@ class RoundStartView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        game = get_object_or_404(
-            models.Game, owner=self.request.user,
-            started=True, ended=False
+        game = models.Game.objects.no_ended_game_by_user(
+            self.request.user
         )
-        members = models.GameMember.objects.filter(
-            game=game
-        ).order_by('out_of_game')
+
+        members = models.GameMember.objects.users_by_game(game)
+
+        # TODO подумать может тут можно проще
+        round_number = members.filter(out_of_game=True).count()
+
         context['members'] = members
-        context['round_number'] = members.filter(out_of_game=True).count() + 1
-        context['round_time'] = game.start_round_time - 10 * (
-                context['round_number'] - 1
-        )
+        context['round_number'] = round_number + 1
+        context['round_time'] = game.round_time
         context['bank'] = game.bank
+
         return context
 
     def get(self, request, *args, **kwargs):
-        started_round = models.GameRound.objects.filter(
-            ended=False,
-            game__owner=self.request.user,
-            game__started=True,
-            game__ended=False
+        started_round = models.GameRound.objects.find_round(
+            request.user
         )
+
         if started_round:
             return redirect('game:question')
-        return super().get(request, *args, **kwargs)
+
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        game = get_object_or_404(
-            models.Game, owner=self.request.user,
-            started=True,
-            ended=False,
-        )
-        x = models.GameRound.objects.get_or_create(
-            game=game,
-            ended=False
-        )[0]
-        if not x.end_time:
-            members = models.GameMember.objects.filter(
-                game=game
+        game_round = models.GameRound.objects.find_round(request.user)
+
+        if not game_round:
+            game = models.Game.objects.no_ended_game_by_user(
+                request.user,
+                start=True
             )
-            x.end_time = datetime.datetime.utcnow() + datetime.timedelta(
-                seconds=(game.start_round_time - 10 * (
-                    members.filter(out_of_game=True).count()
-                )))
-            x.save()
+
+            if not game:
+                return redirect('game:game_start')
+
+            models.GameRound.objects.create(
+                game=game,
+                end_time=(
+                        datetime.datetime.utcnow() +
+                        datetime.timedelta(seconds=game.round_time)
+                )
+            )
 
         return redirect('game:question')
 
@@ -285,6 +307,7 @@ class VoteView(generic.TemplateView):
             game__started=True,
             game__ended=False,
         ).first()
+        game = game_round.game
 
         if not game_round:
             return redirect('game:round_start')
@@ -303,6 +326,8 @@ class VoteView(generic.TemplateView):
             game=game_round.game,
             out_of_game=False
         ).update(brought_in_bank=0, bad_answers=0, good_answers=0)
+        game.round_time -= 10
+        game.save()
         return redirect('game:round_start')
 
 

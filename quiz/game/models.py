@@ -52,6 +52,8 @@ class GameMember(models.Model):
 
 
 class GameRound(models.Model):
+    objects = managers.GameRoundManager()
+
     game = models.ForeignKey(
         'Game',
         on_delete=models.CASCADE,
@@ -75,6 +77,7 @@ class GameRound(models.Model):
 
 
 class Game(models.Model):
+    # TODO сделать уменьшение времени при создание нового раунда
     objects = managers.GameManager()
     owner = models.ForeignKey(
         User,
@@ -83,7 +86,7 @@ class Game(models.Model):
     )
 
     bank = models.IntegerField(default=0, verbose_name='банк')
-    start_round_time = models.IntegerField(
+    round_time = models.IntegerField(
         default=150,
         verbose_name='начальное время на раунд',
         validators=[

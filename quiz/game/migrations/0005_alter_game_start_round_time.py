@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='game',
-            name='start_round_time',
+            name='round_time',
             field=models.IntegerField(default=150, validators=[django.core.validators.MaxValueValidator(1800), django.core.validators.MinValueValidator(120)], verbose_name='начальное время на раунд'),
         ),
     ]
