@@ -6,7 +6,7 @@
 
 {% block topcontent %}
 {% load static %}
-<script src="{% static 'javascript/homepage.js' %}"></script>
+<script src="{% static 'js/homepage.js' %}"></script>
 <div style="padding-top: 40px" >
     <h5 class="card-title" style="text-align: center; font-size: 200px; padding-bottom: 150px; padding-top: 90px; background:rgba(0,0,0,0.5) ;font-family: 'Monotype Corsiva' Cursive;"><font color="yellow" >Q</font><font color="gray">UIZ</font></h5>
 </div>
@@ -53,7 +53,7 @@
         <span>...Почему ты ещё здесь?! Жми "СОЗДАТЬ ИГРУ" и начинай!</span>
     </div>
     <div>
-        <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'game_start' %}" style="font-size: 100px; border-radius: 10px; padding-top: 30px; padding-bottom: 30px; padding-left: 20px; padding-right: 20px; font-family: system-ui;">Создать игру</a>
+        <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'game:game_start' %}" style="font-size: 100px; border-radius: 10px; padding-top: 30px; padding-bottom: 30px; padding-left: 20px; padding-right: 20px; font-family: system-ui;">Создать игру</a>
     </div>
 </div>
 

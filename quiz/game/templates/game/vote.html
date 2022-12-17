@@ -1,24 +1,25 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-    <h1>Голосование</h1>
-    <h2>Статистика игроков:</h2>
-
-    {% for member in members %}
-
-        <p>
-            Игрок <span class="text-primary">{{ member.name }}</span>
-        </p>
-        <p>
-            Правильных ответов: {{ member.good_answers }}<br>
-            Неправильных ответов: {{ member.bad_answers }}<br>
-            Принес в банк: {{ member.brought_in_bank }}
-        </p>
-        <form action="{% url 'kick_player' member.pk %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Выгнать</button>
-        </form>
-        <hr>
-    {% endfor %}
-
+    <div class="d-flex justify-content-center">
+        <div class="col col-lg-4 text-center">
+            <h1>Голосование</h1>
+            <h2>Статистика:</h2>
+            {% for member in members %}
+                <h3 class="text-info">{{ member.name }}</h3>
+                <p>
+                    Правильных ответов: <span class="text-primary">{{ member.good_answers }}</span>
+                    <br>
+                    Неправильных ответов: <span class="text-primary">{{ member.bad_answers }}</span>
+                    <br>
+                    Банк: <span class="text-primary">{{ member.brought_in_bank }}</span>
+                </p>
+                <form action="{% url 'game:kick_member' member.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger">Выгнать</button>
+                </form>
+                <hr>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

@@ -11,12 +11,19 @@ class AddMemberForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'})
         }
 
+    def save(self, commit=True):
+        self.instance.game = self.initial.get('game')
+        return super().save(commit)
+
 
 class StartGameForm(forms.ModelForm):
     class Meta:
         model = models.Game
-        fields = ['start_round_time']
+        fields = ['round_time']
         widgets = {
-            'start_round_time': forms.TextInput(
-                attrs={'class': 'form-control'})
+            'round_time': forms.NumberInput(
+                attrs={'class': 'form-control'}
+            )
         }
+
+    # def save(self, commit=True):

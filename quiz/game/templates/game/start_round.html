@@ -1,27 +1,28 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-    <h1>Раунд №{{ round_number }}</h1>
-    <p>Банк: <span class="text-primary">{{ bank }}</span><br>
-    Время на раунд: <span class="text-primary">{{ round_time }}</span> секунд</p>
-    <div>
-        {% for member in members %}
-            {% ifchanged member.out_of_game %}
-                {% if not member.out_of_game %}
-                    <h2>В игре</h2>
-                {% else %}
-                    <h2>Выбыли</h2>
-                {% endif %}
-            {% endifchanged %}
-            <p>
-                Игрок <span class=" {% if not member.out_of_game %}text-primary
-{% else %}text-muted{% endif %}">{{ member.name }}</span>
-            </p>
-        {% endfor %}
+    <div class="d-flex justify-content-center">
+        <div class="col col-lg-4 text-center">
+            <h1>Раунд №{{ round_number }}</h1>
+            <p>Банк: <span class="text-primary">{{ bank }}</span><br>
+                Время на раунд: <span class="text-primary">{{ round_time }}</span> секунд</p>
+            <div>
+                {% for member in members %}
+                    {% ifchanged member.out_of_game %}
+                        {% if not member.out_of_game %}
+                            <h2>Игроки в игре:</h2>
+                        {% else %}
+                            <h2>Выбывшие игроки:</h2>
+                        {% endif %}
+                    {% endifchanged %}
+                    <p class=" {% if not member.out_of_game %}text-primary{% else %}text-muted{% endif %}">{{ member.name }}</p>
+                {% endfor %}
+            </div>
+            <form action="{% url 'game:round_start' %}" method="post" class="mt-5">
+                {% csrf_token %}
+                <button class="btn btn-outline-success btn-lg">Начать раунд</button>
+            </form>
+        </div>
     </div>
-    <form action="{% url 'round_start' %}" method="post" class="mt-5">
-        {% csrf_token %}
-        <button class="btn btn-success btn-lg">Начать раунд</button>
-    </form>
 
 {% endblock %}
