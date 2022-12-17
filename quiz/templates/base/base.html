@@ -4,27 +4,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     {% block head %}{% endblock %}
     <style>
         body {
             font-size: 18px;
+            background-color: #161617;
+            color: white;
         }
 
         {% block style %}
         {% endblock %}
     </style>
 </head>
-<body class="bg-dark text-white">
-<div class="container">
-    {% include 'includes/navbar.html' %}
-    {% block topcontent %}{% endblock %}
-    <div class="mt-5">
-        {% block content %}{% endblock %}
-    </div>
-    {% block undercontent %}{% endblock %}
-</div>
+<body>
 
+{% with request.resolver_match.view_name as url_name %}
+
+    {% if url_name ==  'home:homepage' %}
+        <div class="container">
+            {% include 'includes/navbar.html' %}
+        </div>
+    {% endif %}
+
+    {% block preview %}
+    {% endblock %}
+    <div class="container">
+
+        {% if url_name !=  'home:homepage' %}
+            {% include 'includes/navbar.html' %}
+        {% endif %}
+
+        <div class="mt-5">
+            {% block content %}{% endblock %}
+        </div>
+
+    </div>
+{% endwith %}
 </body>
 <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
 <script src="{% static 'js/popper.min.js' %}"></script>
