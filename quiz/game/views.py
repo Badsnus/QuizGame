@@ -156,8 +156,7 @@ class QuestionView(LoginRequiredMixin, generic.DetailView, RedirectViewMixin):
 
         context['round'] = self.game_round
         context['member'] = member
-
-        context['round_end_time'] = str(self.game_round.end_time)
+        context['round_end_time'] = str(self.game_round.end_time) + ' UTC'
 
         return context
 
