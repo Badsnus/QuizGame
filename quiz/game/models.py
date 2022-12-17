@@ -6,6 +6,8 @@ from . import managers
 
 
 class GameQuestion(models.Model):
+    objects = managers.GameQuestionManager()
+
     question = models.CharField(max_length=300, verbose_name='вопрос')
     answer = models.CharField(max_length=300, verbose_name='ответ')
 
@@ -71,13 +73,30 @@ class GameRound(models.Model):
     def __str__(self):
         return f'раунд {self.pk}'
 
+    def save(self, update_round_time=False, update_end_game=None,
+             *args, **kwargs):
+        """
+        :param update_round_time - bool
+        :param update_end_game - None or user
+        """
+        if any((update_round_time, update_end_game)):
+            if update_round_time:
+                self.game.round_time -= 10
+            elif update_end_game:
+                update_end_game.out_of_game = True
+                update_end_game.save()
+                self.game.ended = True
+
+            self.game.save()
+
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = 'раунд'
         verbose_name_plural = 'раунды'
 
 
 class Game(models.Model):
-    # TODO сделать уменьшение времени при создание нового раунда
     objects = managers.GameManager()
     owner = models.ForeignKey(
         User,
