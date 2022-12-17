@@ -16,7 +16,6 @@ ALLOWED_HOSTS = [
     'karonus.tk',
     'localhost',
     '127.0.0.1',
-    '192.168.1.66' # delete
 ]
 
 # Application definition
@@ -77,16 +76,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
-#         'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-#         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'iop09&56'),
-#         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-#         'PORT': '5432',
-#     }
-# }
 
 # Password validation
 

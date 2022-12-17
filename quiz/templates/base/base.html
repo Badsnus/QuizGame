@@ -21,15 +21,28 @@
 </head>
 <body>
 
-<div class="container">
-    {% include 'includes/navbar.html' %}
-    {% block topcontent %}{% endblock %}
-    <div class="mt-5">
-        {% block content %}{% endblock %}
-    </div>
-    {% block undercontent %}{% endblock %}
-</div>
+{% with request.resolver_match.view_name as url_name %}
 
+    {% if url_name ==  'home:homepage' %}
+        <div class="container">
+            {% include 'includes/navbar.html' %}
+        </div>
+    {% endif %}
+
+    {% block preview %}
+    {% endblock %}
+    <div class="container">
+
+        {% if url_name !=  'home:homepage' %}
+            {% include 'includes/navbar.html' %}
+        {% endif %}
+
+        <div class="mt-5">
+            {% block content %}{% endblock %}
+        </div>
+
+    </div>
+{% endwith %}
 </body>
 <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
 <script src="{% static 'js/popper.min.js' %}"></script>
