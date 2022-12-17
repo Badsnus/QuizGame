@@ -22,9 +22,9 @@
             </div>
             <h3>Вопрос игроку: <span class="text-primary">{{ member.name }}</span></h3>
             <div>
-                <span>Вопрос: {{ question.question }}</span>
-                <br>
-                <span>Ответ на вопрос: {{ question.answer }}</span>
+                <span><span class="text-primary">Вопрос:</span> {{ question.question }}</span>
+                <br class="my-2">
+                <span><span class="text-primary">Ответ на вопрос:</span> {{ question.answer }}</span>
             </div>
             <br>
             <form action="{% url 'game:question' %}" method="post">
