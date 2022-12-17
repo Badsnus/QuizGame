@@ -1,9 +1,49 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, views
 from django.views import generic
-from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect, render
 
 from game import models as game_models
+from .forms import RegisterForm, LoginForm
+
+
+class LoginView(views.LoginView):
+    form_class = LoginForm
+    template_name = 'registration/login.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_anonymous:
+            return redirect('users:profile')
+        return super().get(request, *args, **kwargs)
+
+
+class CustomLogoutView(views.LogoutView):
+    template_name = 'registration/logout.html'
+
+
+class RegisterView(generic.FormView):
+    form_class = RegisterForm
+    template_name = 'registration/registration.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_anonymous:
+            return redirect('users:profile')
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.save()
+
+        user = authenticate(
+            username=form.cleaned_data.get('username'),
+            password=form.cleaned_data.get('password1')
+        )
+        login(self.request, user)
+        return redirect('users:profile')
+
+    def form_invalid(self, form):
+        context = {
+            'form': form
+        }
+        return render(self.request, self.template_name, context)
 
 
 class ProfileView(generic.TemplateView):
@@ -23,24 +63,3 @@ class ProfileView(generic.TemplateView):
             )
         )
         return context
-
-
-class RegisterView(generic.FormView):
-    form_class = UserCreationForm
-    template_name = 'registration/registration.html'
-
-    def form_valid(self, form):
-        form.save()
-
-        user = authenticate(
-            username=form.cleaned_data.get('username'),
-            password=form.cleaned_data.get('password1')
-        )
-        login(self.request, user)
-        return redirect('users:profile')
-
-    def form_invalid(self, form):
-        context = {
-            'form': form
-        }
-        return render(self.request, self.template_name, context)
