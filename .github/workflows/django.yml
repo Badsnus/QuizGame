@@ -14,16 +14,16 @@ jobs:
       matrix:
         python-version: [ "3.10" ]
 
-#    services:
-#      postgres:
-#        image: postgres:15.1
-#        env:
-#          POSTGRES_USER: postgres
-#          POSTGRES_PASSWORD: postgres
-#          POSTGRES_DB: postgres
-#        ports:
-#          - 5432:5432
-#        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    services:
+      postgres:
+        image: postgres:15.1
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v3
@@ -38,4 +38,4 @@ jobs:
       - name: Run Tests
         run: |
           cd quiz
-#          python manage.py test
+          python manage.py test

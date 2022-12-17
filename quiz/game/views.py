@@ -1,17 +1,17 @@
 from django.views import generic
-from django.shortcuts import redirect, reverse, get_object_or_404, HttpResponse
+from django.shortcuts import redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from . import models, forms
 from . import services
-from .view_mixins import RedirectViewMixin
+from .view_mixins import RedirectViewMixin, GameFormInitialMixin
 
 
 class NoAuthView(generic.TemplateView):
     template_name = 'game/no_auth.html'
 
 
-class StartGameView(generic.FormView):
+class StartGameView(GameFormInitialMixin, generic.FormView):
     template_name = 'game/start_game.html'
     form_class = forms.StartGameForm
 
@@ -43,54 +43,18 @@ class StartGameView(generic.FormView):
         return context
 
     def form_valid(self, form):
-        game = get_object_or_404(
-            models.Game.objects.no_ended_game_by_user(
-                user=self.request.user,
-                start=False,
-                query_set=True
-            )
-        )
-
-        members_count = models.GameMember.objects.filter(game=game).count()
-        # TODO это надо переделать - выглядит не красиво
-        if 12 >= members_count >= 2:
-            game.round_time = form.cleaned_data['round_time']
-            game.started = True
-            game.save()
-
-            return super().form_valid(form)
-
-        if members_count < 2:
-            error = 'Минимальное кол-во игроков - 2'
-        else:
-            error = 'Максимальное кол-во игроков - 12'
-
-        form.add_error('round_time', error)
-        return super().form_invalid(form)
+        form.save()
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('game:round_start')
 
 
-class AddMember(LoginRequiredMixin, generic.FormView):
+class AddMember(LoginRequiredMixin, GameFormInitialMixin, generic.FormView):
     form_class = forms.AddMemberForm
-
-    def get_initial(self):
-        initial = super().get_initial()
-
-        initial['game'] = get_object_or_404(
-            models.Game.objects.no_ended_game_by_user(
-                self.request.user,
-                start=False,
-                query_set=True
-            )
-        )
-
-        return initial
 
     def form_valid(self, form):
         form.save()
-
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -107,28 +71,32 @@ class RemoveMember(LoginRequiredMixin, generic.View):
 
 class RoundStartView(generic.TemplateView):
     template_name = 'game/start_round.html'
+    game = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        game = models.Game.objects.no_ended_game_by_user(
-            self.request.user
-        )
-
-        members = models.GameMember.objects.users_by_game(game)
+        members = models.GameMember.objects.users_by_game(self.game)
 
         round_number = members.filter(out_of_game=True).count()
 
         context['members'] = members
         context['round_number'] = round_number + 1
-        context['round_time'] = game.round_time
-        context['bank'] = game.bank
+        context['round_time'] = self.game.round_time
+        context['bank'] = self.game.bank
 
         return context
 
     def get(self, request, *args, **kwargs):
-        started_round = models.GameRound.objects.find_round_by_user(
-            request.user
+        self.game = models.Game.objects.no_ended_game_by_user(
+            self.request.user
+        )
+
+        if not self.game:
+            return redirect('game:game_start')
+
+        started_round = models.GameRound.objects.find_round_by_game(
+            game=self.game
         )
 
         if started_round:
@@ -153,7 +121,7 @@ class RoundStartView(generic.TemplateView):
         return redirect('game:question')
 
 
-class QuestionView(LoginRequiredMixin, generic.DetailView):
+class QuestionView(LoginRequiredMixin, generic.DetailView, RedirectViewMixin):
     model = models.GameQuestion
     template_name = 'game/game.html'
     context_object_name = 'question'
@@ -164,13 +132,17 @@ class QuestionView(LoginRequiredMixin, generic.DetailView):
 
     def get(self, request, *args, **kwargs):
         self.game_round = models.GameRound.objects.find_round_by_user(
-            request.user)
+            request.user
+        )
 
-        if not self.game_round:
-            return redirect('game:game_start')
+        redirect_url = self.get_redirect_url(
+            self.game_round,
+            check_question=True,
+            check_vote=False
+        )
 
-        if self.game_round.vote:
-            return redirect('game:vote')
+        if redirect_url:
+            return redirect_url
 
         return super().get(request, *args, **kwargs)
 

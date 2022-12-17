@@ -114,6 +114,12 @@ class GameRoundManager(models.Manager):
     def _select_related_game(self):
         return self.get_queryset().select_related('game')
 
+    def find_round_by_game(self, game):
+        return self._select_related_game().filter(
+            ended=False,
+            game=game
+        ).first()
+
     def find_round_by_user(self, user, query_set=False, final=None):
         query = self._select_related_game().filter(
             ended=False,

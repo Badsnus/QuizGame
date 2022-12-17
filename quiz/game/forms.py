@@ -26,4 +26,21 @@ class StartGameForm(forms.ModelForm):
             )
         }
 
-    # def save(self, commit=True):
+    def is_valid(self):
+        members_count = models.GameMember.objects.filter(
+            game=self.initial.get('game')
+        ).count()
+        if members_count < 2:
+            self.add_error('round_time', 'Минимальное кол-во игроков - 2')
+        elif members_count > 12:
+            self.add_error('round_time', 'Максимальное кол-во игроков - 12')
+
+        return super().is_valid()
+
+    def save(self, commit=True):
+        self.instance = self.initial.get('game')
+        self.instance.round_time = self.cleaned_data['round_time']
+        self.instance.started = True
+        self.instance.save()
+
+
