@@ -1,9 +1,18 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, views
 from django.views import generic
-from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect, render
 
 from game import models as game_models
+from .forms import RegisterForm, LoginForm
+
+
+class LoginView(views.LoginView):
+    form_class = LoginForm
+    template_name = 'registration/login.html'
+
+
+class CustomLogoutView(views.LogoutView):
+    template_name = 'registration/logout.html'
 
 
 class ProfileView(generic.TemplateView):
@@ -26,7 +35,7 @@ class ProfileView(generic.TemplateView):
 
 
 class RegisterView(generic.FormView):
-    form_class = UserCreationForm
+    form_class = RegisterForm
     template_name = 'registration/registration.html'
 
     def form_valid(self, form):
