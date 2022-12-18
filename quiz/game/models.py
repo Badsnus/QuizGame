@@ -79,7 +79,7 @@ class GameRound(models.Model):
              *args, **kwargs):
         """
         :param update_round_time - bool
-        :param update_end_game - None or user
+        :param update_end_game - None or GameMember
         """
         if any((update_round_time, update_end_game)):
             if update_round_time:
