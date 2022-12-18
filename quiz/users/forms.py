@@ -1,7 +1,5 @@
 from django import forms
 from django.contrib.auth import get_user_model, forms as auth_forms, models
-from django.contrib.auth.forms import PasswordChangeForm
-from django.forms import BaseForm
 
 User = get_user_model()
 
@@ -73,7 +71,7 @@ class LoginForm(auth_forms.AuthenticationForm):
         fields = ('username', 'password')
 
 
-class CustomPasswordChangeForm(PasswordChangeForm):
+class CustomPasswordChangeForm(auth_forms.PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
