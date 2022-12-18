@@ -9,7 +9,7 @@ class GameMemberManager(models.Manager):
     def _select_related_game(self):
         return self.get_queryset().select_related('game')
 
-    def users_by_game(self, game, out_of_game=None, order_by_pk=None):
+    def members_by_game(self, game, out_of_game=None, order_by_pk=None):
         query = self.get_queryset().filter(game=game)
 
         if out_of_game is None:
@@ -32,12 +32,11 @@ class GameMemberManager(models.Manager):
             ).order_by('-pk')
         )
 
-    def winner(self, game_pk):
-        return get_object_or_404(
+    def end_game_members(self, game_pk):
+        return (
             self._select_related_game().filter(
-                game__pk=game_pk,
-                out_of_game=False
-            ),
+                game__pk=game_pk
+            ).order_by('out_of_game')
         )
 
     def _get_game_members_no_end_game_by_user(self, user):

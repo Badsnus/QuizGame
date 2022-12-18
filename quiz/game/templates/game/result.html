@@ -1,7 +1,24 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-    <h1>Победитель игры: <span class="text-primary">{{ winner.name }}</span>
-    </h1>
-    <h2>Банк: <span class="text-primary">{{ winner.game.bank }}</span></h2>
+    {% for member in members %}
+        {% ifchanged member.out_of_game %}
+            {% if not member.out_of_game %}
+                <h1>Банк: <span
+                        class="text-primary">{{ member.game.bank }}</span>
+                </h1>
+                <h1>Победитель игры: <span
+                        class="text-primary">{{ member.name }}</span>
+                </h1>
+
+            {% else %}
+                <h1>Выбывшие:</h1>
+            {% endif %}
+        {% endifchanged %}
+        {% if member.out_of_game %}
+            <h2 class="text-muted">{{ member.name }}</h2>
+        {% endif %}
+
+    {% endfor %}
+
 {% endblock %}

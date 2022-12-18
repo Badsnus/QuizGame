@@ -15,6 +15,12 @@ class StartGameView(GameFormInitialMixin, generic.FormView):
     template_name = 'game/start_game.html'
     form_class = forms.StartGameForm
 
+    def post(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return redirect('game:no_auth')
+
+        return super().post(request, *args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         if request.user.is_anonymous:
             return redirect('game:no_auth')
@@ -69,14 +75,14 @@ class RemoveMember(LoginRequiredMixin, generic.View):
         return redirect('game:game_start')
 
 
-class RoundStartView(generic.TemplateView):
+class RoundStartView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'game/start_round.html'
     game = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        members = models.GameMember.objects.users_by_game(self.game)
+        members = models.GameMember.objects.members_by_game(self.game)
 
         round_number = members.filter(out_of_game=True).count()
 
@@ -169,14 +175,14 @@ class QuestionView(LoginRequiredMixin, generic.DetailView, RedirectViewMixin):
         )
 
 
-class VoteView(generic.TemplateView, RedirectViewMixin):
+class VoteView(LoginRequiredMixin, generic.TemplateView, RedirectViewMixin):
     template_name = 'game/vote.html'
     game_round = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['members'] = models.GameMember.objects.users_by_game(
+        context['members'] = models.GameMember.objects.members_by_game(
             self.game_round.game,
             out_of_game=False
         )
@@ -218,7 +224,7 @@ class VoteView(generic.TemplateView, RedirectViewMixin):
         return redirect('game:round_start')
 
 
-class FinalView(generic.TemplateView, RedirectViewMixin):
+class FinalView(LoginRequiredMixin, generic.TemplateView, RedirectViewMixin):
     template_name = 'game/final.html'
 
     def get_context_data(self, **kwargs):
@@ -232,7 +238,7 @@ class FinalView(generic.TemplateView, RedirectViewMixin):
         if redirect_url:
             return redirect_url
 
-        members = list(models.GameMember.objects.users_by_game(
+        members = list(models.GameMember.objects.members_by_game(
             game=game_round.game, out_of_game=False, order_by_pk=True
         ))
 
@@ -268,9 +274,11 @@ class FinalView(generic.TemplateView, RedirectViewMixin):
         return result if result else redirect('game:final')
 
 
-class ResultView(generic.DetailView):
+class ResultView(generic.ListView):
     template_name = 'game/result.html'
-    context_object_name = 'winner'
+    context_object_name = 'members'
 
-    def get_object(self, queryset=None):
-        return models.GameMember.objects.winner(self.kwargs['pk'])
+    def get_queryset(self):
+        return models.GameMember.objects.end_game_members(
+            game_pk=self.kwargs['pk']
+        )

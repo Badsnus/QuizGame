@@ -1,8 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.contrib.auth.models import User
 
 from . import managers
+
+User = get_user_model()
 
 
 class GameQuestion(models.Model):
@@ -77,7 +79,7 @@ class GameRound(models.Model):
              *args, **kwargs):
         """
         :param update_round_time - bool
-        :param update_end_game - None or user
+        :param update_end_game - None or GameMember
         """
         if any((update_round_time, update_end_game)):
             if update_round_time:
