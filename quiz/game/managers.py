@@ -32,12 +32,11 @@ class GameMemberManager(models.Manager):
             ).order_by('-pk')
         )
 
-    def winner(self, game_pk):
-        return get_object_or_404(
+    def end_game_members(self, game_pk):
+        return (
             self._select_related_game().filter(
-                game__pk=game_pk,
-                out_of_game=False
-            ),
+                game__pk=game_pk
+            ).order_by('out_of_game')
         )
 
     def _get_game_members_no_end_game_by_user(self, user):

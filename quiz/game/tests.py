@@ -413,8 +413,8 @@ class StaticURLTests(TestCase):
             response,
             reverse('game:result', kwargs=dict(pk=self.user2_game.pk))
         )
-        self.assertIn('winner', response.context)
+        self.assertIn('members', response.context)
         self.assertEqual(
-            member, response.context['winner'],
+            member, response.context['members'].first(),
             'Не правильный победитель'
         )

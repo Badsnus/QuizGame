@@ -274,9 +274,11 @@ class FinalView(LoginRequiredMixin, generic.TemplateView, RedirectViewMixin):
         return result if result else redirect('game:final')
 
 
-class ResultView(generic.DetailView):
+class ResultView(generic.ListView):
     template_name = 'game/result.html'
-    context_object_name = 'winner'
+    context_object_name = 'members'
 
-    def get_object(self, queryset=None):
-        return models.GameMember.objects.winner(self.kwargs['pk'])
+    def get_queryset(self):
+        return models.GameMember.objects.end_game_members(
+            game_pk=self.kwargs['pk']
+        )
