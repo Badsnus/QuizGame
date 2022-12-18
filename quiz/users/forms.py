@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model, forms as auth_forms, models
+from django.contrib.auth.forms import PasswordChangeForm
+from django.forms import BaseForm
 
 User = get_user_model()
 
@@ -69,3 +71,11 @@ class LoginForm(auth_forms.AuthenticationForm):
     class Meta:
         model = User
         fields = ('username', 'password')
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+
+        for field in self.visible_fields():
+            field.field.widget.attrs["class"] = "form-control"

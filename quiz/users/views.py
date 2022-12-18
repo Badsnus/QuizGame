@@ -1,9 +1,11 @@
 from django.contrib.auth import authenticate, login, views
+from django.contrib.auth.views import PasswordChangeDoneView, PasswordChangeView
+from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import redirect, render
 
 from game import models as game_models
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, CustomPasswordChangeForm
 
 
 class LoginView(views.LoginView):
@@ -63,3 +65,13 @@ class ProfileView(generic.TemplateView):
             )
         )
         return context
+
+
+class CustomPasswordChangeDoneView(PasswordChangeDoneView):
+    template_name = "users/password_change_done.html"
+
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = "users/password_change.html"
+    form_class = CustomPasswordChangeForm
+    success_url = reverse_lazy("users:change_password_done")

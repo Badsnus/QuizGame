@@ -5,9 +5,8 @@
     <div class="mb-4">
         <h3>Управление аккаунтом</h3>
         <div class="d-flex justify-content-start">
-            <a class="btn btn-outline-success mr-2">Сменить пароль</a>
-            <a class="btn btn-outline-danger" href="{% url 'users:logout' %}">Выйти
-                из аккаунта</a>
+            <a class="btn btn-outline-success mr-2" href="{% url 'users:change_password' %}">Сменить пароль</a>
+            <a class="btn btn-outline-danger" href="{% url 'users:logout' %}">Выйти из аккаунта</a>
         </div>
 
 
