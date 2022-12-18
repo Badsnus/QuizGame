@@ -6,6 +6,9 @@ User = get_user_model()
 
 
 class StaticURLTests(TestCase):
+    test_user_username = 'testuser'
+    test_user_password = 'qwerty'
+
     PROFILE_URL = reverse('users:profile')
     LOGIN_URL = reverse('users:login')
     REGISTER_URL = reverse('users:register')
@@ -14,8 +17,8 @@ class StaticURLTests(TestCase):
     def login(func):
         def wrapper(self, *args, **kwargs):
             self.client.login(
-                username='testuser',
-                password='qwerty'
+                username=self.test_user_username,
+                password=self.test_user_password
             )
             func(self, *args, **kwargs)
             self.client.logout()
@@ -24,11 +27,9 @@ class StaticURLTests(TestCase):
 
     def setUp(self):
         self.user = User(
-            username='testuser',
-            email='user@test.ru',
-            password='qwerty'
+            username=self.test_user_username
         )
-        self.user.set_password('qwerty')
+        self.user.set_password(self.test_user_password)
         self.user.full_clean()
         self.user.save()
 
