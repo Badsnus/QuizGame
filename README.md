@@ -32,7 +32,7 @@ ___
 
 #### 1)Клонируем репозиторий
 
-    git clone https://github.com/Badsnus/-lyceum_django_lessons.git
+    git clone https://github.com/Badsnus/Django_project.git
 
 #### 2)Заходим в директорию репозитория
 
