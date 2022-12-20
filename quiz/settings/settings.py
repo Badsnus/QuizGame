@@ -18,8 +18,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-LOGIN_URL = '/users/login/'
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -78,7 +76,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
 # Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
