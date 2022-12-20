@@ -68,7 +68,10 @@ class GameMemberManager(models.Manager):
             self.get_queryset().filter(pk=pk).delete()
         )
 
-    def reset_stat(self, game_round):
+    def reset_stat(self, game_round, end_round=False):
+        
+        if end_round:
+            game_round.ended = True
 
         game_round.offset = 0
         game_round.save(update_round_time=True)
