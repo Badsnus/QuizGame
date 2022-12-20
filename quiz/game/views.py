@@ -218,8 +218,7 @@ class VoteView(LoginRequiredMixin, generic.TemplateView, RedirectViewMixin):
             kwargs.get('pk', None)
         )
 
-        game_round.ended = True
-        models.GameMember.objects.reset_stat(game_round)  # tam gm_round.save()
+        models.GameMember.objects.reset_stat(game_round, True)
 
         return redirect('game:round_start')
 
