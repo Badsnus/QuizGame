@@ -19,7 +19,7 @@ urlpatterns = [
     path('final/', views.FinalView.as_view(), name='final'),
 
     path('vote/', views.VoteView.as_view(), name='vote'),
-    path('vote/kick/<int:pk>', views.VoteView.as_view(), name='kick_member'),
+    path('vote/kick/<int:pk>/', views.VoteView.as_view(), name='kick_member'),
 
     path('result/<int:pk>/', views.ResultView.as_view(), name='result'),
 ]

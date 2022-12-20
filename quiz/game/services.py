@@ -82,7 +82,7 @@ class GameRoundLogic:
 class GameFinalLogic:
     @staticmethod
     def update_info(value, game_round):
-        members = list(models.GameMember.objects.users_by_game(
+        members = list(models.GameMember.objects.members_by_game(
             game=game_round.game, out_of_game=False, order_by_pk=True
         ))
         response_player = members[game_round.offset]
