@@ -61,7 +61,7 @@ class StaticURLTests(TestCase):
         response = self.client.get(self.PROFILE_URL, follow=True)
 
         self.assertRedirects(
-            response, self.LOGIN_URL + '?next=/users/profile/',
+            response, self.LOGIN_URL,
             msg_prefix='Неавторизованный смог зайти в профиль'
         )
 
