@@ -1,6 +1,4 @@
-from django.contrib.auth import authenticate, login, views
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import PasswordChangeDoneView, PasswordChangeView
+from django.contrib.auth import authenticate, login, views, mixins
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
@@ -40,7 +38,7 @@ class RegisterView(LogoutRequiredMixin, generic.FormView):
         return render(self.request, self.template_name, context)
 
 
-class ProfileView(LoginRequiredMixin, generic.TemplateView):
+class ProfileView(mixins.LoginRequiredMixin, generic.TemplateView):
     template_name = 'users/profile.html'
 
     def get_context_data(self, **kwargs):
@@ -54,11 +52,11 @@ class ProfileView(LoginRequiredMixin, generic.TemplateView):
         return context
 
 
-class CustomPasswordChangeDoneView(PasswordChangeDoneView):
+class CustomPasswordChangeDoneView(views.PasswordChangeDoneView):
     template_name = "users/password_change_done.html"
 
 
-class CustomPasswordChangeView(PasswordChangeView):
+class CustomPasswordChangeView(views.PasswordChangeView):
     template_name = "users/password_change.html"
     form_class = CustomPasswordChangeForm
     success_url = reverse_lazy("users:change_password_done")
