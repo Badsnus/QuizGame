@@ -69,3 +69,11 @@ class LoginForm(auth_forms.AuthenticationForm):
     class Meta:
         model = User
         fields = ('username', 'password')
+
+
+class CustomPasswordChangeForm(auth_forms.PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.visible_fields():
+            field.field.widget.attrs["class"] = "form-control"

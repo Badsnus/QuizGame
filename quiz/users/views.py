@@ -1,33 +1,25 @@
-from django.contrib.auth import authenticate, login, views
-from django.views import generic
+from django.contrib.auth import authenticate, login, views, mixins
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views import generic
 
 from game import models as game_models
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, CustomPasswordChangeForm
+from .mixins import LogoutRequiredMixin
 
 
-class LoginView(views.LoginView):
+class LoginView(LogoutRequiredMixin, views.LoginView):
     form_class = LoginForm
     template_name = 'registration/login.html'
-
-    def get(self, request, *args, **kwargs):
-        if not request.user.is_anonymous:
-            return redirect('users:profile')
-        return super().get(request, *args, **kwargs)
 
 
 class CustomLogoutView(views.LogoutView):
     template_name = 'registration/logout.html'
 
 
-class RegisterView(generic.FormView):
+class RegisterView(LogoutRequiredMixin, generic.FormView):
     form_class = RegisterForm
     template_name = 'registration/registration.html'
-
-    def get(self, request, *args, **kwargs):
-        if not request.user.is_anonymous:
-            return redirect('users:profile')
-        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.save()
@@ -46,13 +38,8 @@ class RegisterView(generic.FormView):
         return render(self.request, self.template_name, context)
 
 
-class ProfileView(generic.TemplateView):
+class ProfileView(mixins.LoginRequiredMixin, generic.TemplateView):
     template_name = 'users/profile.html'
-
-    def get(self, request, *args, **kwargs):
-        if request.user.is_anonymous:
-            return redirect('users:login')
-        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,3 +50,13 @@ class ProfileView(generic.TemplateView):
             )
         )
         return context
+
+
+class CustomPasswordChangeDoneView(views.PasswordChangeDoneView):
+    template_name = "users/password_change_done.html"
+
+
+class CustomPasswordChangeView(views.PasswordChangeView):
+    template_name = "users/password_change.html"
+    form_class = CustomPasswordChangeForm
+    success_url = reverse_lazy("users:change_password_done")
