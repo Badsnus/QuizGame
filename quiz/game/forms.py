@@ -6,7 +6,7 @@ from . import models
 class AddMemberForm(forms.ModelForm):
     class Meta:
         model = models.GameMember
-        fields = ['name']
+        fields = ('name',)
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'})
         }
@@ -19,7 +19,7 @@ class AddMemberForm(forms.ModelForm):
 class StartGameForm(forms.ModelForm):
     class Meta:
         model = models.Game
-        fields = ['round_time']
+        fields = ('round_time',)
         widgets = {
             'round_time': forms.NumberInput(
                 attrs={'class': 'form-control'}

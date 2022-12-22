@@ -36,23 +36,23 @@ class GameRoundLogic:
                 self.make_vote(game_round, game_round.bank, members, True)
                 return self._get_redirect()
 
-            # TODO подумать мб можно проще
-            if value in ('bad', 'good'):
-                if value == 'bad':
+            match value:
+                case 'bad':
                     member.bad_answers += 1
-                    game_round.now_bank = 0
-                else:
+                case 'good':
                     member.good_answers += 1
                     game_round.now_bank = (
                         BANK[(BANK.index(game_round.now_bank) + 1) % len(BANK)]
                     )
+                case 'bank':
+                    member.brought_in_bank = game_round.now_bank
+                    game_round.bank += game_round.now_bank
 
-                game_round.offset = (game_round.offset + 1) % members.count()
-
-            else:
-                member.brought_in_bank = game_round.now_bank
-                game_round.bank += game_round.now_bank
+            if value != 'good':
                 game_round.now_bank = 0
+
+            if value != 'bank':
+                game_round.offset = (game_round.offset + 1) % members.count()
 
             if game_round.now_bank + game_round.bank >= BANK[-1]:
                 self.make_vote(game_round, BANK[-1], members)

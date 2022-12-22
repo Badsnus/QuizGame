@@ -7,6 +7,35 @@ from . import managers
 User = get_user_model()
 
 
+class Game(models.Model):
+    objects = managers.GameManager()
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='владелец игры'
+    )
+
+    bank = models.IntegerField(default=0, verbose_name='банк')
+    round_time = models.IntegerField(
+        default=150,
+        verbose_name='начальное время на раунд',
+        validators=[
+            MaxValueValidator(1800),
+            MinValueValidator(120)
+        ],
+    )
+
+    started = models.BooleanField(default=False, verbose_name='игра начата')
+    ended = models.BooleanField(default=False, verbose_name='игра закончена')
+
+    def __str__(self):
+        return f'игра {self.pk}'
+
+    class Meta:
+        verbose_name = 'игра'
+        verbose_name_plural = 'игры'
+
+
 class GameQuestion(models.Model):
     objects = managers.GameQuestionManager()
 
@@ -27,7 +56,7 @@ class GameMember(models.Model):
     name = models.CharField(max_length=30, verbose_name='имя')
 
     game = models.ForeignKey(
-        'Game',
+        Game,
         on_delete=models.CASCADE,
         verbose_name='игра'
     )
@@ -59,7 +88,7 @@ class GameRound(models.Model):
     objects = managers.GameRoundManager()
 
     game = models.ForeignKey(
-        'Game',
+        Game,
         on_delete=models.CASCADE,
         verbose_name='игра'
     )
@@ -96,32 +125,3 @@ class GameRound(models.Model):
     class Meta:
         verbose_name = 'раунд'
         verbose_name_plural = 'раунды'
-
-
-class Game(models.Model):
-    objects = managers.GameManager()
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name='владелец игры'
-    )
-
-    bank = models.IntegerField(default=0, verbose_name='банк')
-    round_time = models.IntegerField(
-        default=150,
-        verbose_name='начальное время на раунд',
-        validators=[
-            MaxValueValidator(1800),
-            MinValueValidator(120)
-        ],
-    )
-
-    started = models.BooleanField(default=False, verbose_name='игра начата')
-    ended = models.BooleanField(default=False, verbose_name='игра закончена')
-
-    def __str__(self):
-        return f'игра {self.pk}'
-
-    class Meta:
-        verbose_name = 'игра'
-        verbose_name_plural = 'игры'
