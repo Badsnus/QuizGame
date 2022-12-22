@@ -15,13 +15,8 @@ class StartGameView(GameFormInitialMixin, generic.FormView):
     template_name = 'game/start_game.html'
     form_class = forms.StartGameForm
 
-    def post(self, request, *args, **kwargs):
-        if request.user.is_anonymous:
-            return redirect('game:no_auth')
-
-        return super().post(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def check_redirect(request):
         if request.user.is_anonymous:
             return redirect('game:no_auth')
 
@@ -32,6 +27,19 @@ class StartGameView(GameFormInitialMixin, generic.FormView):
 
         if started_game:
             return redirect('game:round_start')
+
+    def post(self, request, *args, **kwargs):
+        redirect_url = self.check_redirect(request)
+        if redirect_url:
+            return redirect_url
+
+        return super().post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+
+        redirect_url = self.check_redirect(request)
+        if redirect_url:
+            return redirect_url
 
         models.Game.objects.create_new_or_get_game(request.user)
 
