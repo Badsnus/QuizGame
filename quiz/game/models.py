@@ -25,9 +25,8 @@ class Game(models.Model):
         ],
     )
     question_filter = models.CharField(
-        max_length=10, choices=[
+        max_length=2, choices=[
             ('?', 'Рандомный порядок'),
-            ('question', 'Вопросы в алфавитном порядке '),
             ('pk', 'По порядку в таблице')
         ], default='?',
         verbose_name='cортировка вопросов'
