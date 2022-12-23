@@ -1,6 +1,3 @@
-import csv
-import io
-
 from django.contrib import admin
 from django.shortcuts import render, redirect
 from import_export.admin import ImportExportModelAdmin
