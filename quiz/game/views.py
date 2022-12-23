@@ -142,7 +142,10 @@ class QuestionView(LoginRequiredMixin, generic.DetailView, RedirectViewMixin):
     game_round = None
 
     def get_object(self, queryset=None):
-        return models.GameQuestion.objects.get_random_question()
+        return models.GameQuestion.objects.get_random_question(
+            models.QuestionInGame.objects.get_by_game(self.game_round.game),
+            self.game_round.game
+        )
 
     def get(self, request, *args, **kwargs):
         self.game_round = models.GameRound.objects.find_round_by_user(
@@ -179,7 +182,8 @@ class QuestionView(LoginRequiredMixin, generic.DetailView, RedirectViewMixin):
 
         return game_logic.update_round_info(
             request.user,
-            request.POST.get('value', None)
+            request.POST.get('value', None),
+            request.POST.get('question_pk', None)
         )
 
 
@@ -252,7 +256,10 @@ class FinalView(LoginRequiredMixin, generic.TemplateView, RedirectViewMixin):
         context['bank'] = game_round.game.bank
         context['members'] = members
         context['question_for_member'] = members[game_round.offset]
-        context['question'] = models.GameQuestion.objects.get_random_question()
+        context['question'] = models.GameQuestion.objects.get_random_question(
+            models.QuestionInGame.objects.get_by_game(game_round.game),
+            game_round.game
+        )
 
         return context
 
@@ -265,7 +272,8 @@ class FinalView(LoginRequiredMixin, generic.TemplateView, RedirectViewMixin):
     def post(self, request, *args, **kwargs):
 
         value = request.POST.get('value', None)
-        if value not in ('good', 'bad'):
+        question_pk = request.POST.get('question_pk', None)
+        if value not in ('good', 'bad') or not question_pk.isdigit():
             return redirect('game:final')
 
         game_round = models.GameRound.objects.find_round_by_user(
@@ -276,7 +284,11 @@ class FinalView(LoginRequiredMixin, generic.TemplateView, RedirectViewMixin):
         if redirect_url:
             return redirect_url
 
-        result = services.GameFinalLogic.update_info(value, game_round)
+        result = services.GameFinalLogic().update_info(
+            question_pk,
+            value,
+            game_round
+        )
 
         return result if result else redirect('game:final')
 

@@ -24,6 +24,13 @@ class Game(models.Model):
             MinValueValidator(120)
         ],
     )
+    question_filter = models.CharField(
+        max_length=2, choices=[
+            ('?', 'Рандомный порядок'),
+            ('pk', 'По порядку в таблице')
+        ], default='?',
+        verbose_name='cортировка вопросов'
+    )
 
     started = models.BooleanField(default=False, verbose_name='игра начата')
     ended = models.BooleanField(default=False, verbose_name='игра закончена')
@@ -48,6 +55,13 @@ class GameQuestion(models.Model):
     class Meta:
         verbose_name = 'вопрос'
         verbose_name_plural = 'вопросы'
+
+
+class QuestionInGame(models.Model):
+    objects = managers.QuestionInGameManager()
+
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    question = models.ForeignKey(GameQuestion, on_delete=models.CASCADE)
 
 
 class GameMember(models.Model):

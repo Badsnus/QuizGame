@@ -176,7 +176,7 @@ class StaticURLTests(TestCase):
 
         response = self.client.post(
             self.START_GAME_URL, follow=True,
-            data={'round_time': 150}
+            data={'round_time': 150, 'question_filter': '?'}
         )
         self.assertRedirects(response, self.START_ROUND_URL)
 
@@ -205,7 +205,7 @@ class StaticURLTests(TestCase):
 
         response = self.client.post(
             self.START_GAME_URL, follow=True,
-            data={'round_time': 150}
+            data={'round_time': 150, 'question_filter': '?'}
         )
         self.assertRedirects(response, self.START_ROUND_URL)
 
@@ -234,7 +234,7 @@ class StaticURLTests(TestCase):
         for key in test_data:
             self.assertIn(key, response.context, f'Нет {key} в вопрос вью')
         member = response.context['member']
-
+        question = response.context['question']
         # without value
         response = self.client.post(self.QUESTION_URL, follow=True)
         self.assertRedirects(response, self.QUESTION_URL)
@@ -246,7 +246,10 @@ class StaticURLTests(TestCase):
         # with good value
         response = self.client.post(
             self.QUESTION_URL, follow=True,
-            data={'value': 'good'}
+            data={
+                'value': 'good',
+                'question_pk': question.pk
+            }
         )
         self.assertRedirects(response, self.QUESTION_URL)
         self.assertNotEqual(
@@ -262,11 +265,15 @@ class StaticURLTests(TestCase):
             'Не добавился текуший банк'
         )
         member = response.context['member']
+        question = response.context['question']
 
         # with bad value
         response = self.client.post(
             self.QUESTION_URL, follow=True,
-            data={'value': 'bad'}
+            data={
+                'value': 'bad',
+                'question_pk': question.pk
+            }
         )
         self.assertRedirects(response, self.QUESTION_URL)
         self.assertNotEqual(
@@ -293,7 +300,7 @@ class StaticURLTests(TestCase):
         # with bank value
         response = self.client.post(
             self.QUESTION_URL, follow=True,
-            data={'value': 'bank'}
+            data={'value': 'bank', 'question_pk': question.pk}
         )
         self.assertRedirects(response, self.QUESTION_URL)
         self.assertEqual(
@@ -318,7 +325,7 @@ class StaticURLTests(TestCase):
         for i in range(8):
             response = self.client.post(
                 self.QUESTION_URL, follow=True,
-                data={'value': 'good'}
+                data={'value': 'good', 'question_pk': question.pk}
             )
         self.assertRedirects(response, self.VOTE_URL)
         # test vote
@@ -356,13 +363,13 @@ class StaticURLTests(TestCase):
         for value in 'good', 'bank':
             self.client.post(
                 self.QUESTION_URL, follow=True,
-                data={'value': value}
+                data={'value': value, 'question_pk': question.pk}
             )
 
         for i in range(3):
             self.client.post(
                 self.QUESTION_URL, follow=True,
-                data={'value': 'good'}
+                data={'value': 'good', 'question_pk': question.pk}
             )
 
         # check end round by time
@@ -373,7 +380,7 @@ class StaticURLTests(TestCase):
         game_round.save()
         response = self.client.post(
             self.QUESTION_URL, follow=True,
-            data={'value': 'bank'}
+            data={'value': 'bank', 'question_pk': question.pk}
         )
         self.assertRedirects(response, self.FINAL_URL)
 
@@ -394,7 +401,7 @@ class StaticURLTests(TestCase):
         for value in ('good', 'good', 'bad', 'bad') * 3:
             response = self.client.post(
                 self.FINAL_URL, follow=True,
-                data={'value': value}
+                data={'value': value, 'question_pk': question.pk}
             )
             self.assertRedirects(response, self.FINAL_URL)
 
@@ -407,7 +414,7 @@ class StaticURLTests(TestCase):
         for value in 'good', 'bad':
             response = self.client.post(
                 self.FINAL_URL, follow=True,
-                data={'value': value}
+                data={'value': value, 'question_pk': question.pk}
             )
         self.assertRedirects(
             response,
