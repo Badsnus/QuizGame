@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'import_export',
+
     'homepage.apps.HomepageConfig',
     'game.apps.GameConfig',
     'users.apps.UsersConfig',
@@ -102,11 +104,11 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = "https://storage.yandexcloud.net/django-project/static/"
+STATIC_URL = 'https://static.karonus.tk/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static_dev"
+    BASE_DIR / 'static_dev'
 ]
-STATIC_ROOT = "static"
+STATIC_ROOT = 'static'
 
 # Default primary key field type
 
