@@ -10,13 +10,13 @@ from .models import GameQuestion, Game, GameMember
 class QuestionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('question', 'answer')
 
-    def import_action(self, request):
+    def import_action(self, request, *args):
         form = CsvImportForm()
 
         if request.method == 'POST':
             GameQuestion.objects.import_csv(request.FILES, GameQuestion)
 
-            return redirect("admin:game_gamequestion_changelist")
+            return redirect('admin:game_gamequestion_changelist')
 
         context = {
             'form': form,
