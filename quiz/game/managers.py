@@ -168,6 +168,6 @@ class GameQuestionManager(models.Manager):
 
 class QuestionInGameManager(models.Manager):
     def get_by_game(self, game):
-        return self.get_queryset().select_related('game').filter(
+        return self.get_queryset().filter(
             game=game
         )
