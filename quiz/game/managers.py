@@ -161,8 +161,8 @@ class GameQuestionManager(models.Manager):
         for row in reader:
             for_create.append(
                 GameQuestionObject(
-                    question=row[0],
-                    answer=row[1],
+                    question=row[-2],
+                    answer=row[-1],
                 )
             )
         self.get_queryset().all().delete()
