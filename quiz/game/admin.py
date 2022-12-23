@@ -2,7 +2,7 @@ import csv
 import io
 
 from django.contrib import admin
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from import_export.admin import ImportExportModelAdmin
 
 from .forms import CsvImportForm
@@ -34,6 +34,8 @@ class QuestionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
             GameQuestion.objects.all().delete()
             GameQuestion.objects.bulk_create(for_create)
+
+            return redirect("admin:game_gamequestion_changelist")
 
         context = {
             'form': form,

@@ -1,5 +1,15 @@
 {% extends 'base/base.html' %}
 
+{% load static %}
+
+{% block head %}
+    <script src="{% static 'js/snowfall.jquery.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(document).snowfall({image :"{% static 'images/danila.png' %}", minSize: 40, maxSize:50});
+        });
+    </script>
+{% endblock %}
 {% block content %}
     {% for member in members %}
         {% ifchanged member.out_of_game %}
