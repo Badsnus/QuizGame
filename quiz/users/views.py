@@ -53,10 +53,10 @@ class ProfileView(mixins.LoginRequiredMixin, generic.TemplateView):
 
 
 class CustomPasswordChangeDoneView(views.PasswordChangeDoneView):
-    template_name = "users/password_change_done.html"
+    template_name = 'users/password_change_done.html'
 
 
 class CustomPasswordChangeView(views.PasswordChangeView):
-    template_name = "users/password_change.html"
+    template_name = 'users/password_change.html'
     form_class = CustomPasswordChangeForm
-    success_url = reverse_lazy("users:change_password_done")
+    success_url = reverse_lazy('users:change_password_done')
