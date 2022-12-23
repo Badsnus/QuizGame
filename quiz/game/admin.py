@@ -17,23 +17,7 @@ class QuestionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         form = CsvImportForm()
 
         if request.method == 'POST':
-            for_create = []
-            reader = csv.reader(
-                io.StringIO(
-                    request.FILES.get('csv_file').read().decode('utf-8')
-                )
-            )
-
-            for row in reader:
-                for_create.append(
-                    GameQuestion(
-                        question=row[0],
-                        answer=row[1],
-                    )
-                )
-
-            GameQuestion.objects.all().delete()
-            GameQuestion.objects.bulk_create(for_create)
+            GameQuestion.objects.import_csv(request.FILES, GameQuestion)
 
             return redirect("admin:game_gamequestion_changelist")
 
