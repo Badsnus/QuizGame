@@ -29,6 +29,7 @@
             <br>
             <form action="{% url 'game:question' %}" method="post">
                 {% csrf_token %}
+                <input hidden name="question_pk" value="{{ question.pk }}"/>
                 <button class="btn btn-success" name="value" type="submit" value="good">Правильный ответ</button>
                 <br>
                 <button class="btn btn-outline-primary my-2" name="value" type="submit" value="bank">Банк</button>

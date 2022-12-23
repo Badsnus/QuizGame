@@ -68,7 +68,10 @@ class GameMemberManager(models.Manager):
             self.get_queryset().filter(pk=pk).delete()
         )
 
-    def reset_stat(self, game_round):
+    def reset_stat(self, game_round, end_round=False):
+
+        if end_round:
+            game_round.ended = True
 
         game_round.offset = 0
         game_round.save(update_round_time=True)
@@ -145,6 +148,26 @@ class GameRoundManager(models.Manager):
 
 
 class GameQuestionManager(models.Manager):
+    def _get_question(self, ids, filter_by):
+        return self.get_queryset().exclude(
+            id__in=ids
+        ).order_by(filter_by).first()
 
-    def get_random_question(self):
-        return self.get_queryset().order_by("?").first()
+    def get_random_question(self, used_questions, game):
+        filter_by = game.question_filter
+
+        query = self._get_question(
+            used_questions.values('question__pk'),
+            filter_by
+        )
+        if query:
+            return query
+        used_questions.delete()
+        return self._get_question([], filter_by)
+
+
+class QuestionInGameManager(models.Manager):
+    def get_by_game(self, game):
+        return self.get_queryset().filter(
+            game=game
+        )
