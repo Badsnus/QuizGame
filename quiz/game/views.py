@@ -143,7 +143,8 @@ class QuestionView(LoginRequiredMixin, generic.DetailView, RedirectViewMixin):
 
     def get_object(self, queryset=None):
         return models.GameQuestion.objects.get_random_question(
-            models.QuestionInGame.objects.get_by_game(self.game_round.game)
+            models.QuestionInGame.objects.get_by_game(self.game_round.game),
+            self.game_round.game
         )
 
     def get(self, request, *args, **kwargs):
@@ -256,7 +257,8 @@ class FinalView(LoginRequiredMixin, generic.TemplateView, RedirectViewMixin):
         context['members'] = members
         context['question_for_member'] = members[game_round.offset]
         context['question'] = models.GameQuestion.objects.get_random_question(
-            models.QuestionInGame.objects.get_by_game(game_round.game)
+            models.QuestionInGame.objects.get_by_game(game_round.game),
+            game_round.game
         )
 
         return context

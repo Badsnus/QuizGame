@@ -19,9 +19,12 @@ class AddMemberForm(forms.ModelForm):
 class StartGameForm(forms.ModelForm):
     class Meta:
         model = models.Game
-        fields = ('round_time',)
+        fields = ('round_time', 'question_filter')
         widgets = {
             'round_time': forms.NumberInput(
+                attrs={'class': 'form-control'}
+            ),
+            'question_filter': forms.Select(
                 attrs={'class': 'form-control'}
             )
         }
@@ -41,6 +44,7 @@ class StartGameForm(forms.ModelForm):
     def save(self, commit=True):
         self.instance = self.initial.get('game')
         self.instance.round_time = self.cleaned_data['round_time']
+        self.instance.question_filter = self.cleaned_data['question_filter']
         self.instance.started = True
         if commit:
             self.instance.save()

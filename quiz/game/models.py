@@ -24,6 +24,13 @@ class Game(models.Model):
             MinValueValidator(120)
         ],
     )
+    question_filter = models.CharField(
+        max_length=2, choices=[
+            ('?', 'Рандомный порядок'),
+            ('pk', 'По порядку')
+        ], default='?',
+        verbose_name='cортировка вопросов'
+    )
 
     started = models.BooleanField(default=False, verbose_name='игра начата')
     ended = models.BooleanField(default=False, verbose_name='игра закончена')

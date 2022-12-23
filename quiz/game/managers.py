@@ -148,21 +148,26 @@ class GameRoundManager(models.Manager):
 
 
 class GameQuestionManager(models.Manager):
-    def _get_question(self, ids):
+    def _get_question(self, ids, filter_by):
         return self.get_queryset().exclude(
             id__in=ids
-        ).order_by("?").first()
+        ).order_by(filter_by).first()
 
-    def get_random_question(self, used_questions):
-        query = self._get_question(used_questions.values('question__pk'))
+    def get_random_question(self, used_questions, game):
+        filter_by = game.question_filter
+
+        query = self._get_question(
+            used_questions.values('question__pk'),
+            filter_by
+        )
         if query:
             return query
         used_questions.delete()
-        return self._get_question([])
+        return self._get_question([], filter_by)
 
 
 class QuestionInGameManager(models.Manager):
     def get_by_game(self, game):
-        return self.get_queryset().filter(
+        return self.get_queryset().select_related('game').filter(
             game=game
         )

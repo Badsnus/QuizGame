@@ -176,7 +176,7 @@ class StaticURLTests(TestCase):
 
         response = self.client.post(
             self.START_GAME_URL, follow=True,
-            data={'round_time': 150}
+            data={'round_time': 150, 'question_filter': '?'}
         )
         self.assertRedirects(response, self.START_ROUND_URL)
 
@@ -205,7 +205,7 @@ class StaticURLTests(TestCase):
 
         response = self.client.post(
             self.START_GAME_URL, follow=True,
-            data={'round_time': 150}
+            data={'round_time': 150, 'question_filter': '?'}
         )
         self.assertRedirects(response, self.START_ROUND_URL)
 
