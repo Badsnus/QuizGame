@@ -104,7 +104,7 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = 'https://static.karonus.tk/'
+STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 STATICFILES_DIRS = [
     BASE_DIR / 'static_dev'
 ]
