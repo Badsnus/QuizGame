@@ -1,4 +1,6 @@
+import csv
 import datetime
+import io
 
 from django.db import models
 from django.shortcuts import get_object_or_404
@@ -148,6 +150,24 @@ class GameRoundManager(models.Manager):
 
 
 class GameQuestionManager(models.Manager):
+    def import_csv(self, request_files, GameQuestionObject):
+        for_create = []
+        reader = csv.reader(
+            io.StringIO(
+                request_files.get('csv_file').read().decode('utf-8')
+            )
+        )
+
+        for row in reader:
+            for_create.append(
+                GameQuestionObject(
+                    question=row[0],
+                    answer=row[1],
+                )
+            )
+        self.get_queryset().all().delete()
+        self.get_queryset().bulk_create(for_create)
+
     def _get_question(self, ids, filter_by):
         return self.get_queryset().exclude(
             id__in=ids
