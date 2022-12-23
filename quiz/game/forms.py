@@ -3,6 +3,14 @@ from django import forms
 from . import models
 
 
+class CsvImportForm(forms.Form):
+    csv_file = forms.FileField(
+        allow_empty_file=False,
+        label='CSV файл',
+        widget=forms.FileInput(attrs={'class': 'form-input'})
+    )
+
+
 class AddMemberForm(forms.ModelForm):
     class Meta:
         model = models.GameMember
