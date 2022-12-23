@@ -18,7 +18,9 @@
                 {% endfor %}
             </div>
             <div class="my-3">
-                <h4>Вопрос для: <span class="text-primary"> {{ question_for_member.name }}</span></h4>
+                <h4>Вопрос для: <span
+                        class="text-primary"> {{ question_for_member.name }}</span>
+                </h4>
                 <div>
                     <span>Вопрос: {{ question.question }}</span>
                     <br>
@@ -27,9 +29,14 @@
             </div>
             <form action="{% url 'game:final' %}" method="post">
                 {% csrf_token %}
-                <button class="btn btn-success mb-3" name="value" type="submit" value="good">Правильный ответ</button>
+                <input hidden name="question_pk" value="{{ question.pk }}"/>
+                <button class="btn btn-success mb-3" name="value" type="submit"
+                        value="good">Правильный ответ
+                </button>
                 <br>
-                <button class="btn btn-danger" name="value" type="submit" value="bad">Неправильный ответ</button>
+                <button class="btn btn-danger" name="value" type="submit"
+                        value="bad">Неправильный ответ
+                </button>
             </form>
         </div>
     </div>

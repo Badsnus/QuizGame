@@ -69,7 +69,7 @@ class GameMemberManager(models.Manager):
         )
 
     def reset_stat(self, game_round, end_round=False):
-        
+
         if end_round:
             game_round.ended = True
 
@@ -148,6 +148,21 @@ class GameRoundManager(models.Manager):
 
 
 class GameQuestionManager(models.Manager):
+    def _get_question(self, ids):
+        return self.get_queryset().exclude(
+            id__in=ids
+        ).order_by("?").first()
 
-    def get_random_question(self):
-        return self.get_queryset().order_by("?").first()
+    def get_random_question(self, used_questions):
+        query = self._get_question(used_questions.values('question__pk'))
+        if query:
+            return query
+        used_questions.delete()
+        return self._get_question([])
+
+
+class QuestionInGameManager(models.Manager):
+    def get_by_game(self, game):
+        return self.get_queryset().filter(
+            game=game
+        )

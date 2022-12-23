@@ -6,7 +6,16 @@ from settings.settings import BANK
 from . import models
 
 
-class GameRoundLogic:
+class UpdateQuestionUsedMixin:
+    @staticmethod
+    def _update_question_used(game, question_pk):
+        models.QuestionInGame.objects.get_or_create(
+            game=game,
+            question_id=question_pk
+        )
+
+
+class GameRoundLogic(UpdateQuestionUsedMixin):
 
     @staticmethod
     def _get_redirect():
@@ -19,11 +28,12 @@ class GameRoundLogic:
                 datetime.datetime.utcnow().replace(tzinfo=None)
         )
 
-    def update_round_info(self, user, value):
-        if value in ('bad', 'good', 'bank'):
+    def update_round_info(self, user, value, question_pk):
+        if value in ('bad', 'good', 'bank') and question_pk:
             game_round = get_object_or_404(
                 models.GameRound.objects.find_round_by_user(user, True)
             )
+
             members = (
                 models.GameMember.objects.get_active_game_members_by_user(
                     user
@@ -53,6 +63,7 @@ class GameRoundLogic:
 
             if value != 'bank':
                 game_round.offset = (game_round.offset + 1) % members.count()
+                self._update_question_used(game_round.game, question_pk)
 
             if game_round.now_bank + game_round.bank >= BANK[-1]:
                 self.make_vote(game_round, BANK[-1], members)
@@ -79,9 +90,9 @@ class GameRoundLogic:
         game.save()
 
 
-class GameFinalLogic:
-    @staticmethod
-    def update_info(value, game_round):
+class GameFinalLogic(UpdateQuestionUsedMixin):
+
+    def update_info(self, question_pk, value, game_round):
         members = list(models.GameMember.objects.members_by_game(
             game=game_round.game, out_of_game=False, order_by_pk=True
         ))
@@ -91,7 +102,7 @@ class GameFinalLogic:
             sum(getattr(item, atr) for atr in ['good_answers', 'bad_answers'])
             for item in members
         )
-
+        self._update_question_used(game_round.game, question_pk)
         if value == 'good':
             response_player.good_answers += 1
         else:

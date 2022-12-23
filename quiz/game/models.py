@@ -50,6 +50,13 @@ class GameQuestion(models.Model):
         verbose_name_plural = 'вопросы'
 
 
+class QuestionInGame(models.Model):
+    objects = managers.QuestionInGameManager()
+
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    question = models.ForeignKey(GameQuestion, on_delete=models.CASCADE)
+
+
 class GameMember(models.Model):
     objects = managers.GameMemberManager()
 
