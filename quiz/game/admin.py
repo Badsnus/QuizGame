@@ -20,9 +20,6 @@ class QuestionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
         context = {
             'form': form,
-            'form_title': 'Загрузите CSV файл с вопросами.',
-            'description': 'Содержимое файла: 1 колонка - вопрос, '
-                           '2 колонка - ответ',
             'endpoint': '/admin/game/questions/import/'
         }
 
