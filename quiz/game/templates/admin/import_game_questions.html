@@ -30,10 +30,36 @@
         .form-input:hover {
             background: #417690;
         }
+
+        code {
+            font-size: 18px;
+        }
+
+        li {
+            font-size: 15px;
+        }
+
+        .without-dots {
+            list-style-type: none;
+        }
+
+        label {
+            font-size: 16px;
+        }
     </style>
     <div>
-        <h1>{{ form_title }}</h1>
-        <h2>{{ description }}</h2>
+        <h1>Загрузите CSV файл с вопросами</h1>
+        <h2>Структура файла:</h2>
+        <p>Разделитель - запятая</p>
+        <ul>
+            <li>1 колонка: <code>question</code> - вопрос</li>
+            <li>2 колонка: <code>answer</code> - ответ</li>
+        </ul>
+        <h2>Пример структуры файла:</h2>
+        <ul>
+            <li class="without-dots"><code><b>question,answer</b></code></li>
+            <li class="without-dots"><code>Столица России?,Москва</code></li>
+        </ul>
         <br/>
         <br/>
         <form method="POST" id="csv-form" enctype="multipart/form-data">

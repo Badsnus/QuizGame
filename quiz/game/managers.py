@@ -152,7 +152,7 @@ class GameRoundManager(models.Manager):
 class GameQuestionManager(models.Manager):
     def import_csv(self, request_files, GameQuestionObject):
         for_create = []
-        reader = csv.reader(
+        reader = csv.DictReader(
             io.StringIO(
                 request_files.get('csv_file').read().decode('utf-8')
             )
@@ -161,10 +161,11 @@ class GameQuestionManager(models.Manager):
         for row in reader:
             for_create.append(
                 GameQuestionObject(
-                    question=row[-2],
-                    answer=row[-1],
+                    question=row['question'],
+                    answer=row['answer'],
                 )
             )
+
         self.get_queryset().all().delete()
         self.get_queryset().bulk_create(for_create)
 
