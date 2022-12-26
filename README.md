@@ -32,11 +32,11 @@ ___
 
 #### 1)Клонируем репозиторий
 
-    git clone https://github.com/Badsnus/Django_project.git
+    git clone https://github.com/Badsnus/QuizGame.git
 
 #### 2)Заходим в директорию репозитория
 
-    cd Django_project
+    cd QuizGame
 
 #### 3) Поднимаем контейнер
 
